@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?><project>
+  <parent>
+    <artifactId>transport</artifactId>
+    <groupId>br.com</groupId>
+    <version>0.0.1-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>br.com</groupId>
+  <artifactId>trasnport-ws</artifactId>
+  <packaging>war</packaging>
+  <name>trasnport-ws</name>
+  <version>0.0.1-SNAPSHOT</version>
+  <url>http://maven.apache.org</url>
+  <build>
+    <finalName>trasnport-ws</finalName>
+  </build>
+</project>
