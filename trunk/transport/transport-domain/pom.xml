@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?><project>
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <artifactId>transport</artifactId>
     <groupId>br.com</groupId>
@@ -11,6 +12,16 @@
   <name>transport-domain</name>
   <build>
     <plugins>
+    	<plugin>
+    		<groupId>org.codehaus.mojo</groupId>
+    		<artifactId>jboss-maven-plugin</artifactId>
+    		<version>1.4</version>
+			<configuration>
+				<jbossHome>/opt/app/jboss-5.1.0.GA</jbossHome>
+          		<serverName>transport</serverName>
+          		<fileName>target/transport-domain.jar</fileName>          		         		          		  				
+  			</configuration>    		
+    	</plugin>
     </plugins>
     <finalName>transport-domain</finalName>
   </build>
