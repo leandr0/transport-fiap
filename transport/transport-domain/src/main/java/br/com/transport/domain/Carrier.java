@@ -35,16 +35,25 @@ public class Carrier implements EntityBase {
 	@Column(name = "CAPACITY", nullable = false)
 	private Double capacity;
 	
-	/* (non-Javadoc)
-	 * @see br.com.transport.domain.EntityBase#getId()
-	 */
+	
+
+	public Carrier() {
+	}
+
+	public Carrier(String model, String year, String lisencePlate,
+			Double capacity) {
+		super();
+		this.model = model;
+		this.year = year;
+		this.lisencePlate = lisencePlate;
+		this.capacity = capacity;
+	}
+
+	
 	public Long getId() {
 		return id;
 	}
 
-	/* (non-Javadoc)
-	 * @see br.com.transport.domain.EntityBase#setId(java.lang.Long)
-	 */
 	public void setId(Long id) {
 		this.id = id;
 	}
