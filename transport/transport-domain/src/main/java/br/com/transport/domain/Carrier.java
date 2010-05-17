@@ -3,11 +3,14 @@
  */
 package br.com.transport.domain;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 /**
@@ -35,6 +38,12 @@ public class Carrier implements EntityBase {
 	@Column(name = "CAPACITY", nullable = false)
 	private Double capacity;
 	
+	@OneToMany(mappedBy = "carrier")
+	private List<Freight> listFreight;
+	
+	/* (non-Javadoc)
+	 * @see br.com.transport.domain.EntityBase#getId()
+	 */
 	
 
 	public Carrier() {
@@ -88,5 +97,13 @@ public class Carrier implements EntityBase {
 
 	public void setCapacity(Double capacity) {
 		this.capacity = capacity;
+	}
+
+	public List<Freight> getListFreight() {
+		return listFreight;
+	}
+
+	public void setListFreight(List<Freight> listFreight) {
+		this.listFreight = listFreight;
 	}
 }
