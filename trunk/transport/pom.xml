@@ -32,10 +32,7 @@
 				<jbossHome>C:\Workspace\Apps\Server\jboss-5.1.0.GA</jbossHome>
           		<serverName>transport</serverName>
           		<fileName>
-          			
-          			transport-payment/target/transport-payment.jar
-          			
-          			
+          			transport-allocation/target/transport-allocation.jar
           		</fileName>
           		         		          		  				
   			</configuration>  			
