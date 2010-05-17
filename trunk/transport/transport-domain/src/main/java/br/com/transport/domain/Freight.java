@@ -12,6 +12,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -53,6 +54,10 @@ public class Freight implements EntityBase {
 	
 	@OneToMany(mappedBy = "freight")
 	private List<TrackHistory> listTrackHistory;
+	
+	@ManyToOne
+	@JoinColumn(name = "CARRIER_ID", nullable = false)
+	private Carrier carrier;
 	
 	/* (non-Javadoc)
 	 * @see br.com.transport.domain.EntityBase#getId()
@@ -122,5 +127,13 @@ public class Freight implements EntityBase {
 
 	public void setListTrackHistory(List<TrackHistory> listTrackHistory) {
 		this.listTrackHistory = listTrackHistory;
+	}
+
+	public Carrier getCarrier() {
+		return carrier;
+	}
+
+	public void setCarrier(Carrier carrier) {
+		this.carrier = carrier;
 	}	
 }
