@@ -12,7 +12,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -38,34 +37,47 @@ public class ManagerCadastreBean implements ManagerCadastreLocal, ManagerCadastr
 	
 	
 	public void addCarrierFleet(List<Carrier> carriers){
+		LOG.info("init add carries");
 		if (carriers == null) 
 			throw new IllegalArgumentException("List of Carrier is null");
 		validateList(carriers);
 		
 		for (Carrier carrier : carriers)
 			entityManager.persist(carrier);
+		LOG.info("carries add with sucess");
 	}
 
 
 
 
 	public void addEmployee(Employee employee) {
-		// TODO Auto-generated method stub
+		validEmployee(employee);
+		entityManager.persist(employee);
 	}
 
 
-	public void findEmployee(Employee employee) {
-		// TODO Auto-generated method stub
-	}
+
+	public Employee findEmployee(Employee employee){
+		if(employee == null)
+			throw new IllegalArgumentException("Employee is null");
+		if(employee.getId() == null || employee.getId() <= 0)
+			throw new IllegalArgumentException("Employee with id null or <= 0");		
+		return entityManager.find(Employee.class, employee.getId());
+	}	
 
 
+	
 	public void removeEmployee(Employee employee) {
-		// TODO Auto-generated method stub
+		entityManager.remove(findEmployee(employee));
 	}
 
+	
 
-	public void updateEmployee(Employee employee) {
-		// TODO Auto-generated method stub
+	public Employee updateEmployee(Employee employee){
+		if( findEmployee(employee) == null)
+			throw new IllegalArgumentException("employee not found");
+		validEmployee(employee);
+		return entityManager.merge(employee);
 	}
 	
 
@@ -85,7 +97,15 @@ public class ManagerCadastreBean implements ManagerCadastreLocal, ManagerCadastr
 		}		
 	}
 
-
+	
+	private void validEmployee(Employee employee) {
+		if (employee == null) 
+			throw new IllegalArgumentException("Employee is null");
+		if( StringUtils.isBlank(employee.getName()))
+			throw new IllegalArgumentException("Employee with invalid name");
+		if( employee.getPost() == null)
+			throw new IllegalArgumentException("Employee with invalid post");		
+	}
 
 
 	public void setEntityManager(EntityManager entityManager) {
