@@ -20,7 +20,7 @@ public interface ManagerCadastre{
 	
 	public void removeEmployee(Employee employee);
 	
-	public void updateEmployee(Employee employee);
+	public Employee updateEmployee(Employee employee);
 	
-	public void findEmployee(Employee employee);
+	public Employee findEmployee(Employee employee);
 }
