@@ -17,6 +17,8 @@ import org.junit.Test;
 
 
 import br.com.transport.domain.Carrier;
+import br.com.transport.domain.Employee;
+import br.com.transport.domain.Post;
 
 /**
  * @author robson
@@ -220,27 +222,148 @@ public class ManagerCadastreBeanTest {
 	}
 
 	
-	@Test
-	public void testAddEmployee() {
-		//fail("Not yet implemented");
+	@Test(expected = IllegalArgumentException.class)
+	public void testAddEmployeeNull() {
+		managerCadastreBeanTest.addEmployee(null);
+	}
+	
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testAddEmployeeInvalidName() {
+		managerCadastreBeanTest.addEmployee(new Employee());
+	}
+	
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testAddEmployeeInvalidPost() {
+		Employee employee = new Employee();
+		employee.setName("robson");		
+		managerCadastreBeanTest.addEmployee(employee);
+	}
+	
+	
+	@Test()
+	public void testAddEmployeeValid(){
+		Employee employee = new Employee();
+		employee.setName("robson");
+		employee.setPost(Post.DRIVER);		
+		entityManagerMock.persist(employee);
+		replay(entityManagerMock);
+		managerCadastreBeanTest.setEntityManager(entityManagerMock);		
+		managerCadastreBeanTest.addEmployee(employee);
+		verify(entityManagerMock);
+	}
+
+	
+
+	@Test(expected=IllegalArgumentException.class)
+	public void testFindEmployeeNull(){
+		managerCadastreBeanTest.findEmployee(null);
+	}
+	
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void testFindEmployeeWihtIDnull(){
+		managerCadastreBeanTest.findEmployee(new Employee());
+	}
+
+	
+	
+	@Test(expected=IllegalArgumentException.class)
+	public void testFindEmployeeWihtIDLessEqual0(){
+		Employee employee = new Employee();
+		employee.setId(0L);
+		managerCadastreBeanTest.findEmployee(employee);
+	}
+	
+	
+	
+	@Test()
+	public void testFindEmployeeValid(){
+		Employee employee = new Employee();
+		employee.setId(1L);
+		expect(entityManagerMock.find(Employee.class, employee.getId())).andReturn(new Employee("Robson", Post.DRIVER));
+		replay(entityManagerMock);
+		managerCadastreBeanTest.setEntityManager(entityManagerMock);
+		employee = managerCadastreBeanTest.findEmployee(employee);
+		verify(entityManagerMock);
+		assertNotNull(employee);
 	}
 
 
-	@Test
-	public void testFindEmployee() {
-		//fail("Not yet implemented");
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testRemoveEmployeeNull() {
+		managerCadastreBeanTest.removeEmployee(null);
+	}
+	
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testRemoveEmployeeWithIDNull() {
+		managerCadastreBeanTest.removeEmployee(new Employee());
+	}
+	
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testRemoveEmployeeWihtIDLessEqual0() {
+		Employee employee = new Employee();
+		employee.setId(0L);
+		managerCadastreBeanTest.removeEmployee(employee);
+	}
+	
+	
+	
+	@Test()
+	public void testRemoveEmployeeValid() {
+		Employee employee = new Employee();
+		employee.setId(1L);
+		expect(entityManagerMock.find(Employee.class, employee.getId())).andReturn(employee);
+		entityManagerMock.remove(employee);
+		replay(entityManagerMock);
+		managerCadastreBeanTest.setEntityManager(entityManagerMock);
+		managerCadastreBeanTest.removeEmployee(employee);
+		verify(entityManagerMock);
 	}
 
 
-	@Test
-	public void testRemoveEmployee() {
-		//fail("Not yet implemented");
+	@Test(expected = IllegalArgumentException.class)
+	public void testUpdateEmployeeNotFound(){		
+		Employee employee = new Employee();
+		employee.setId(1L);		
+		expect( entityManagerMock.find(Employee.class, employee.getId())).andReturn(null);
+		replay(entityManagerMock);
+		managerCadastreBeanTest.setEntityManager(entityManagerMock);
+		managerCadastreBeanTest.updateEmployee(employee);
+		verify(entityManagerMock);
 	}
-
-
-	@Test
-	public void testUpdateEmployee() {
-		//fail("Not yet implemented");
+	
+	
+	@Test(expected = IllegalArgumentException.class)
+	public void testUpdateEmployeeFoundInvalid(){		
+		Employee employee = new Employee();
+		employee.setId(1L);		
+		expect( entityManagerMock.find(Employee.class, employee.getId())).andReturn(new Employee());
+		replay(entityManagerMock);
+		managerCadastreBeanTest.setEntityManager(entityManagerMock);
+		managerCadastreBeanTest.updateEmployee(employee);
+		verify(entityManagerMock);
+	}
+	
+	
+	
+	@Test()
+	public void testUpdateEmployeeFoundValid(){		
+		Employee employee = new Employee();
+		employee.setId(1L);
+		employee.setName("Robson");
+		employee.setPost(Post.AUXILIARY);
+		expect( entityManagerMock.find(Employee.class, employee.getId())).andReturn(new Employee());
+		expect( entityManagerMock.merge(employee)).andReturn(employee);
+		replay(entityManagerMock);
+		managerCadastreBeanTest.setEntityManager(entityManagerMock);
+		Employee employee2 = managerCadastreBeanTest.updateEmployee(employee);
+		verify(entityManagerMock);
+		assertNotNull(employee2);
 	}
 
 }
