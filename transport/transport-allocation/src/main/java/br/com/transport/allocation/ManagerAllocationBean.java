@@ -32,7 +32,7 @@ import br.com.transport.domain.Freight;
 @Stateless(name = "allocation")
 @Local(AllocationLocal.class)
 @Remote(AllocationRemote.class)
-public class ManagerAllocationBean implements AllocationLocal {
+public class ManagerAllocationBean implements AllocationLocal, AllocationRemote {
 
 	@PersistenceContext(unitName = "persistence-allocation")
 	private EntityManager entityManager;
@@ -79,28 +79,42 @@ public class ManagerAllocationBean implements AllocationLocal {
 		}
 	}
 
+	/**
+	 * 
+	 * @param freight
+	 * @throws EJBException
+	 */
 	private void persistFreight(Freight freight) throws EJBException{
 		
-		if(dateIsValid(freight.getCarrier().getId(), freight.getDepartureDate(), freight.getDeliveryDate())){
+		if(dateIsValid(freight.getCarrier().getId(), freight.getDepartureDate())){
 			freight.setStatus("ACCEPTED");
 		}else
 			freight.setStatus("REJECTED");
 		
-		entityManager.persist(freight);
+		entityManager.merge(freight);
 	}
 	
-	private boolean dateIsValid(Long carrierID, Date departureDate , Date deliveryDate )throws EJBException{
+	/**
+	 * 
+	 * @param carrierID
+	 * @param departureDate
+	 * @return
+	 * @throws EJBException
+	 */
+	private boolean dateIsValid(Long carrierID, Date departureDate )throws EJBException{
 	
 		Query query = entityManager.createNativeQuery("SELECT ID FROM FREIGHT "+
 										"WHERE CARRIER_ID = :carrierID "+
-										"AND DEPARTURE_DATE >= :departureDate "+
-										"AND DEPARTURE_DATE <= :deliveryDate ");
+										"AND :departureDate "+
+										"BETWEEN DEPARTURE_DATE "+
+										"AND DELIVERY_DATE "+
+										"AND STATUS <> 'REJECTED' "+
+										"AND STATUS <> 'NEW'");
 		
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		
 		query.setParameter("carrierID"		, carrierID	);
 		query.setParameter("departureDate"	, dateFormat.format(departureDate));
-		query.setParameter("deliveryDate"	, dateFormat.format(deliveryDate));
 		
 		List<?> result =  query.getResultList();
 		
