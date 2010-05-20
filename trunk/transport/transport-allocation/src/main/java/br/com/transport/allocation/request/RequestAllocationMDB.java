@@ -51,6 +51,8 @@ public class RequestAllocationMDB implements MessageListener{
 			allocationLocal.processAllocation((Freight) objectMessage.getObject(),
 					objectMessage.getStringProperty("MessageID"));
 			
+			Thread.sleep(3000);
+			
 		}catch (Exception e) {
 			context.getRollbackOnly();
 		}
