@@ -13,6 +13,11 @@ import javax.jms.DeliveryMode;
 import javax.jms.ObjectMessage;
 import javax.jms.Queue;
 import javax.jms.Session;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import br.com.transport.domain.Freight;
 
@@ -25,11 +30,16 @@ import br.com.transport.domain.Freight;
 @Remote(RequestAllocationRemote.class)
 public class ManagerRequestAllocationBean implements RequestAllocationLocal, RequestAllocationRemote{
 
+	@PersistenceContext(unitName = "persistence-allocation")
+	private EntityManager entityManager;
+	
 	@Resource(mappedName = "ConnectionFactory")
 	private ConnectionFactory factory;
-	
+
 	@Resource(mappedName = "/queue/allocationRequest")	
 	private Queue queue;
+
+	private static final Log LOG = LogFactory.getLog(ManagerRequestAllocationBean.class);
 	
 	/*
 	 * (non-Javadoc)
@@ -37,38 +47,53 @@ public class ManagerRequestAllocationBean implements RequestAllocationLocal, Req
 	 */
 	@Override
 	public String requestAllocation(Freight freight)throws EJBException{
-		 
-		 Session session = null;
-		 
-		 try{
-			 
+
+		Session session = null;
+
+		try{
+			LOG.info("Recebendo nova solicitacao de frete");
+			freight.setStatus("NEW");
+			persistFreight(freight);
+			
+		}catch (Exception e) {
+			LOG.error("Erro ao persistir pedido de frete", e);
+			throw new EJBException(e);
+		}
+		
+		try{
+
 			session = factory.createConnection().createSession(true, Session.AUTO_ACKNOWLEDGE);
 
 			ObjectMessage objectMessage = session.createObjectMessage(freight);
 			
-			String idMessage = String.valueOf(objectMessage.getJMSTimestamp());
-			
+			String idMessage = String.valueOf(freight.getId());
+
 			//Atributo que servira de parametro para o filtro de mensagens
 			objectMessage.setStringProperty("MessageID", idMessage);
-			
+
 			session.createProducer(queue).send(objectMessage,DeliveryMode.NON_PERSISTENT,9,0);
-			
+
 			session.commit();
 			session.close();
-			
+
 			return idMessage;
-			
-		 }catch (Exception e) {
-			 
-			 if(session != null ){
-				 
-				 try{
-					 session.rollback();
-				 }catch (Exception ex) {
-					 ex.getCause();
+
+		}catch (Exception e) {
+
+			if(session != null ){
+
+				try{
+					session.rollback();
+				}catch (Exception ex) {
+					ex.getCause();
 				}
-			 }		
-			 throw new EJBException(e);
+			}		
+			throw new EJBException(e);
 		} 
-	 }	
+	}	
+
+	private void persistFreight(Freight freight) throws EJBException{
+		LOG.info("Persistindo solicitacao de frete");
+		entityManager.persist(freight);
+	}
 }
