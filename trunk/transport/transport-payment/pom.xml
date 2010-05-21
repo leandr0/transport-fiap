@@ -23,10 +23,26 @@
   		<artifactId>persistence-api</artifactId>
   		<version>1.0</version>
   	</dependency>
+  	<dependency>
+  		<groupId>br.com</groupId>
+  		<artifactId>transport-domain</artifactId>
+  		<version>1.0-SNAPSHOT</version>
+  		<scope>compile</scope>
+  	</dependency>
   </dependencies>
 
   <build>
     <plugins>
+		<plugin>
+  			<groupId>org.codehaus.mojo</groupId>
+  			<artifactId>jboss-maven-plugin</artifactId>
+  			<version>1.4</version>
+			<configuration>
+				<jbossHome>/opt/app/jboss-5.1.0.GA</jbossHome>
+          		<serverName>transport</serverName>
+          		<fileName>target/transport-payment.jar</fileName>          		         		          		  				
+  			</configuration>  			
+  		</plugin>    
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-ejb-plugin</artifactId>
