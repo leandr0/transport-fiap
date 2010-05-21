@@ -51,8 +51,4 @@
   		<scope>provided</scope>
   	</dependency>
   </dependencies>
-  <dependencyManagement>
-  	<dependencies>
-  	</dependencies>
-  </dependencyManagement>
 </project>
