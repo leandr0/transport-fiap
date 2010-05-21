@@ -14,6 +14,7 @@ import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.jms.ConnectionFactory;
 import javax.jms.DeliveryMode;
+import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 import javax.jms.Queue;
 import javax.jms.Session;
@@ -32,7 +33,7 @@ import br.com.transport.domain.Freight;
 @Stateless(name = "allocation")
 @Local(AllocationLocal.class)
 @Remote(AllocationRemote.class)
-public class ManagerAllocationBean implements AllocationLocal, AllocationRemote {
+public class ManagerAllocationBean implements AllocationLocal, AllocationRemote{
 
 	@PersistenceContext(unitName = "persistence-allocation")
 	private EntityManager entityManager;
@@ -43,17 +44,20 @@ public class ManagerAllocationBean implements AllocationLocal, AllocationRemote 
 	@Resource(mappedName = "/queue/allocationResponse")	
 	private Queue queue;
 
+	private Session session = null;
+	
+	private Query query = null;
+	
 	/*
 	 * (non-Javadoc)
 	 * @see br.com.transport.allocation.Allocation#processAllocation(br.com.transport.domain.Freight)
 	 */
 	@Override
 	public void processAllocation(Freight freight,String idMessage) throws EJBException {
-		Session session = null;
-
+		
 		try{
 			
-			session = factory.createConnection().createSession(true, Session.AUTO_ACKNOWLEDGE);
+			session = getSession();
 			
 			persistFreight(freight);
 			
@@ -103,13 +107,15 @@ public class ManagerAllocationBean implements AllocationLocal, AllocationRemote 
 	 */
 	private boolean dateIsValid(Long carrierID, Date departureDate )throws EJBException{
 	
-		Query query = entityManager.createNativeQuery("SELECT ID FROM FREIGHT "+
+		if(query == null){
+			query = entityManager.createNativeQuery("SELECT ID FROM FREIGHT "+
 										"WHERE CARRIER_ID = :carrierID "+
 										"AND :departureDate "+
 										"BETWEEN DEPARTURE_DATE "+
 										"AND DELIVERY_DATE "+
 										"AND STATUS <> 'REJECTED' "+
 										"AND STATUS <> 'NEW'");
+		}
 		
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		
@@ -123,4 +129,37 @@ public class ManagerAllocationBean implements AllocationLocal, AllocationRemote 
 		
 		return true;
 	}
+
+	private Session createSession() throws JMSException{
+		return factory.createConnection().createSession(true, Session.AUTO_ACKNOWLEDGE);
+	}
+	
+	private Session getSession() throws JMSException{
+		if(session == null)
+			return createSession();
+		
+		return session; 
+		
+	}
+	
+	public void setEntityManager(EntityManager entityManager) {
+		this.entityManager = entityManager;
+	}
+
+	public void setFactory(ConnectionFactory factory) {
+		this.factory = factory;
+	}
+
+	public void setQueue(Queue queue) {
+		this.queue = queue;
+	}
+
+	public void setSession(Session session) {
+		this.session = session;
+	}
+
+	public void setQuery(Query query) {
+		this.query = query;
+	}
+
 }
