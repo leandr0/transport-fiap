@@ -7,6 +7,7 @@ import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.ejb.EJBException;
@@ -19,6 +20,8 @@ import javax.persistence.Query;
 
 import org.apache.commons.beanutils.converters.CalendarConverter;
 import org.apache.commons.beanutils.converters.DateTimeConverter;
+
+import br.com.transport.domain.vo.ReportVO;
 
 /**
  * @author leandro.goncalves
@@ -39,9 +42,9 @@ public class ManagerReportBean implements ReportLocal, ReportRemote {
 	 * @see br.com.transport.report.Report#executeReport()
 	 */
 	@SuppressWarnings("unchecked")
-	public List<?> executeReport() throws EJBException {
+	public List<ReportVO> executeReport() throws EJBException {
 
-
+		List<ReportVO> resultList = null;
 
 		Query query = entityManager
 						.createNativeQuery("SELECT F.DEPARTURE_DATE,F.DELIVERY_DATE,F.STATUS, "+
@@ -71,64 +74,50 @@ public class ManagerReportBean implements ReportLocal, ReportRemote {
 		 */
 
 		BigInteger idcarrier = null;
-		Calendar deliveryDate = null;
+		Calendar departureDate = null;
 		
 		DateTimeConverter timeConverter = new CalendarConverter();
 		
 		for(Object[] array : a){
-
+			
 			if(idcarrier == null){
 				idcarrier = (BigInteger) array[3];
-				deliveryDate = (Calendar) timeConverter.convert(Calendar.class, array[1]); 
-					//(Calendar) array[1];
-				deliveryDate.roll(Calendar.DAY_OF_MONTH, 1);
+				departureDate = (Calendar) timeConverter.convert(Calendar.class, array[1]); 
+				departureDate.roll(Calendar.DAY_OF_MONTH, 1);
+				resultList = new LinkedList<ReportVO>();
 
 			}else if(idcarrier.equals((BigInteger) array[3])){
 				
-				Calendar cal = (Calendar)timeConverter.convert(Calendar.class,array[0]); 
-				cal.roll(Calendar.DAY_OF_MONTH, -1);
+				Calendar deliveryDate = (Calendar)timeConverter.convert(Calendar.class,array[0]); 
+				deliveryDate.roll(Calendar.DAY_OF_MONTH, -1);
 				
-				cal.set(Calendar.HOUR_OF_DAY,0);
-				cal.set(Calendar.MINUTE,0);
-				cal.set(Calendar.SECOND,0);
-
 				deliveryDate.set(Calendar.HOUR_OF_DAY,0);
 				deliveryDate.set(Calendar.MINUTE,0);
 				deliveryDate.set(Calendar.SECOND,0);
 
-				if(deliveryDate.compareTo(cal) <= 0){
+				departureDate.set(Calendar.HOUR_OF_DAY,0);
+				departureDate.set(Calendar.MINUTE,0);
+				departureDate.set(Calendar.SECOND,0);
+
+				if(departureDate.compareTo(deliveryDate) <= 0){
+
+					resultList.add(new ReportVO(departureDate.getTime(), deliveryDate.getTime(),
+							array[2].toString(), new Long(array[3].toString()), new Double(array[4].toString()),
+							array[5].toString(), array[6].toString()));
 					
-					System.out.print("Truck : ");
-					System.out.print(array[3]);
-					System.out.print(" Capacity : ");
-					System.out.print(array[4]);
-					System.out.print(" License Plate : ");
-					System.out.print(array[5]);
-					System.out.print(" Model : ");
-					System.out.print(array[6]);
-					System.out.println("");
-					System.out.print("Initial Date : ");
-					System.out.print(deliveryDate.getTime());
-					System.out.print("Initial Date : ");
-					System.out.println(cal.getTime());
-					
-					deliveryDate = cal;
+					departureDate = deliveryDate;
 				}
 				
 			}else{
 				idcarrier = (BigInteger) array[3];
-				deliveryDate = (Calendar) timeConverter.convert(Calendar.class,array[1]);
-				deliveryDate.roll(Calendar.DAY_OF_MONTH, 1);
+				departureDate = (Calendar) timeConverter.convert(Calendar.class,array[1]);
+				departureDate.roll(Calendar.DAY_OF_MONTH, 1);
 			}
 
 
 		}
 
-		return null;
-	}
-
-	private void query(){
-
+		return resultList;
 	}
 
 	private String getInitialDate(){
