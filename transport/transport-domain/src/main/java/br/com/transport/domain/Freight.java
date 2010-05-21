@@ -59,16 +59,16 @@ public class Freight implements EntityBase {
 	@JoinColumn(name = "CARRIER_ID", nullable = false)
 	private Carrier carrier;
 	
-	/* (non-Javadoc)
-	 * @see br.com.transport.domain.EntityBase#getId()
-	 */
+	
+	@OneToOne(cascade = CascadeType.ALL )
+	@JoinColumn(name="PAYMENT_ID", nullable = false)
+	private Payment payment;
+	
+	
 	public Long getId() {
 		return id;
 	}
 
-	/* (non-Javadoc)
-	 * @see br.com.transport.domain.EntityBase#setId(java.lang.Long)
-	 */
 	public void setId(Long id) {
 		this.id = id;
 	}
@@ -135,5 +135,14 @@ public class Freight implements EntityBase {
 
 	public void setCarrier(Carrier carrier) {
 		this.carrier = carrier;
-	}	
+	}
+
+	public Payment getPayment() {
+		return payment;
+	}
+
+	public void setPayment(Payment payment) {
+		this.payment = payment;
+	}
+	
 }
