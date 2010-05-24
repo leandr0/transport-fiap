@@ -42,6 +42,18 @@
           <ejbVersion>3.0</ejbVersion>
         </configuration>
       </plugin>
+      <plugin>
+  		<groupId>org.codehaus.mojo</groupId>
+  		<artifactId>jboss-maven-plugin</artifactId>
+  		<version>1.4</version>
+		<configuration>
+			<jbossHome>C:\Workspace\Apps\Server\jboss-5.1.0.GA</jbossHome>
+        	<serverName>transport</serverName>
+          	<fileName>
+          		target/transport-report.jar
+          	</fileName>
+  			</configuration>  			
+  		</plugin>
     </plugins>
     <finalName>transport-report</finalName>
   </build>
