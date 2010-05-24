@@ -10,6 +10,8 @@
 		<class>br.com.transport.domain.Carrier</class>
 		<class>br.com.transport.domain.Freight</class>
 		<class>br.com.transport.domain.TrackHistory</class>
+		<class>br.com.transport.domain.Employee</class>
+		<class>br.com.transport.domain.Payment</class>
 		
 		<properties>
 			<property name="hibernate.hbm2ddl.auto" value="update" />
