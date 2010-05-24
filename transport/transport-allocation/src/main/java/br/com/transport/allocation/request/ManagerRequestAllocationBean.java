@@ -3,6 +3,9 @@
  */
 package br.com.transport.allocation.request;
 
+import java.util.Calendar;
+import java.util.Random;
+
 import javax.annotation.Resource;
 import javax.ejb.EJBException;
 import javax.ejb.Local;
@@ -16,10 +19,15 @@ import javax.jms.Session;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import org.apache.commons.beanutils.converters.CalendarConverter;
+import org.apache.commons.beanutils.converters.DateTimeConverter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import br.com.transport.domain.Freight;
+import br.com.transport.domain.FreightStatus;
+import br.com.transport.domain.Payment;
+import br.com.transport.domain.PaymentStatus;
 
 /**
  * @author leandro.goncalves
@@ -32,7 +40,7 @@ public class ManagerRequestAllocationBean implements RequestAllocationLocal, Req
 
 	@PersistenceContext(unitName = "persistence-allocation")
 	private EntityManager entityManager;
-	
+
 	@Resource(mappedName = "ConnectionFactory")
 	private ConnectionFactory factory;
 
@@ -40,7 +48,7 @@ public class ManagerRequestAllocationBean implements RequestAllocationLocal, Req
 	private Queue queue;
 
 	private static final Log LOG = LogFactory.getLog(ManagerRequestAllocationBean.class);
-	
+
 	/*
 	 * (non-Javadoc)
 	 * @see br.com.transport.allocation.RequestAllocation#requestAllocation(br.com.transport.domain.Freight)
@@ -52,25 +60,25 @@ public class ManagerRequestAllocationBean implements RequestAllocationLocal, Req
 
 		try{
 			LOG.info("Recebendo nova solicitacao de frete");
-			freight.setStatus("NEW");
+			freight.setStatus(FreightStatus.NEW);
 			persistFreight(freight);
-			
+
 		}catch (Exception e) {
 			LOG.error("Erro ao persistir pedido de frete", e);
 			throw new EJBException(e);
 		}
-		
+
 		try{
 
 			session = factory.createConnection().createSession(true, Session.AUTO_ACKNOWLEDGE);
 
 			ObjectMessage objectMessage = session.createObjectMessage(freight);
-			
+
 			String idMessage = String.valueOf(freight.getId());
 
 			//Atributo que servira de parametro para o filtro de mensagens
 			objectMessage.setStringProperty("MessageID", idMessage);
-
+			LOG.info("Send MessageID : "+idMessage);
 			session.createProducer(queue).send(objectMessage,DeliveryMode.NON_PERSISTENT,9,0);
 
 			session.commit();
@@ -94,6 +102,42 @@ public class ManagerRequestAllocationBean implements RequestAllocationLocal, Req
 
 	private void persistFreight(Freight freight) throws EJBException{
 		LOG.info("Persistindo solicitacao de frete");
+		Payment payment = new Payment();
+		payment.setPaymentStatus(PaymentStatus.TO_PAY);
+		payment.setValue(randomValue());
+		freight.setPayment(payment);
+		resetDate(freight);
 		entityManager.persist(freight);
+	}
+
+	private Double randomValue(){
+
+		Random random = new Random();
+
+		Integer result = random.nextInt(3000);
+
+		if(result <= 100)
+			randomValue();
+
+		return result.doubleValue();
+
+	}
+
+	private void resetDate(Freight freight){
+		
+		DateTimeConverter timeConverter = new CalendarConverter();
+
+		Calendar departure = (Calendar) timeConverter.convert(Calendar.class, freight.getDepartureDate());
+		departure.set(Calendar.HOUR_OF_DAY,0);
+		departure.set(Calendar.MINUTE,0);
+		departure.set(Calendar.SECOND,0);
+		
+		Calendar delivery = (Calendar) timeConverter.convert(Calendar.class, freight.getDeliveryDate());
+		delivery.set(Calendar.HOUR_OF_DAY,23);
+		delivery.set(Calendar.MINUTE,59);
+		delivery.set(Calendar.SECOND,59);
+		
+		freight.setDepartureDate(departure.getTime());
+		freight.setDeliveryDate(delivery.getTime());
 	}
 }
