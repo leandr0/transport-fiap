@@ -12,6 +12,9 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import br.com.transport.allocation.AllocationLocal;
 import br.com.transport.domain.Freight;
 
@@ -41,6 +44,8 @@ public class RequestAllocationMDB implements MessageListener{
 	@EJB
 	private AllocationLocal allocationLocal;
 	
+	private static final Log LOG = LogFactory.getLog(RequestAllocationMDB.class);
+	
 	@Override
 	public void onMessage(Message message) {
 		
@@ -48,8 +53,10 @@ public class RequestAllocationMDB implements MessageListener{
 		
 			ObjectMessage objectMessage =  (ObjectMessage) message;
 			
-			allocationLocal.processAllocation((Freight) objectMessage.getObject(),
-					objectMessage.getStringProperty("MessageID"));
+			String messageId = objectMessage.getStringProperty("MessageID");
+			
+			LOG.info("Message Processing ID : "+messageId);
+			allocationLocal.processAllocation((Freight) objectMessage.getObject(),messageId);
 			
 			Thread.sleep(3000);
 			
