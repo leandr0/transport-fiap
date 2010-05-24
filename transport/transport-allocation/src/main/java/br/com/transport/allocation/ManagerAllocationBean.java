@@ -14,7 +14,6 @@ import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.jms.ConnectionFactory;
 import javax.jms.DeliveryMode;
-import javax.jms.JMSException;
 import javax.jms.ObjectMessage;
 import javax.jms.Queue;
 import javax.jms.Session;
@@ -22,7 +21,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import br.com.transport.domain.Freight;
+import br.com.transport.domain.FreightStatus;
 
 
 
@@ -48,6 +51,8 @@ public class ManagerAllocationBean implements AllocationLocal, AllocationRemote{
 	
 	private Query query = null;
 	
+	private static final Log LOG = LogFactory.getLog(ManagerAllocationBean.class);
+	
 	/*
 	 * (non-Javadoc)
 	 * @see br.com.transport.allocation.Allocation#processAllocation(br.com.transport.domain.Freight)
@@ -57,12 +62,16 @@ public class ManagerAllocationBean implements AllocationLocal, AllocationRemote{
 		
 		try{
 			
-			session = getSession();
+			session = factory.createConnection().createSession(true, Session.AUTO_ACKNOWLEDGE);
 			
+			LOG.info("Update Freigh");
 			persistFreight(freight);
+			LOG.info("Status Freigh : "+freight.getStatus());
 			
 			ObjectMessage objectMessage = session.createObjectMessage(freight);
 			objectMessage.setStringProperty("MessageID",idMessage);
+			
+			LOG.info("Seng messade ID : "+idMessage);
 			session.createProducer(queue).send(objectMessage,DeliveryMode.NON_PERSISTENT,9,0);
 
 			session.commit();
@@ -90,10 +99,14 @@ public class ManagerAllocationBean implements AllocationLocal, AllocationRemote{
 	 */
 	private void persistFreight(Freight freight) throws EJBException{
 		
-		if(dateIsValid(freight.getCarrier().getId(), freight.getDepartureDate())){
-			freight.setStatus("ACCEPTED");
+		boolean approved = dateIsValid(freight.getCarrier().getId(), 
+								freight.getDepartureDate(),
+								freight.getDeliveryDate()); 
+		
+		if(approved){
+			freight.setStatus(FreightStatus.ACCEPTED);
 		}else
-			freight.setStatus("REJECTED");
+			freight.setStatus(FreightStatus.REJECTED);
 		
 		entityManager.merge(freight);
 	}
@@ -105,14 +118,20 @@ public class ManagerAllocationBean implements AllocationLocal, AllocationRemote{
 	 * @return
 	 * @throws EJBException
 	 */
-	private boolean dateIsValid(Long carrierID, Date departureDate )throws EJBException{
+	private boolean dateIsValid(Long carrierID, Date departureDate, Date deliveryDate )throws EJBException{
 	
 		if(query == null){
 			query = entityManager.createNativeQuery("SELECT ID FROM FREIGHT "+
 										"WHERE CARRIER_ID = :carrierID "+
-										"AND :departureDate "+
-										"BETWEEN DEPARTURE_DATE "+
-										"AND DELIVERY_DATE "+
+										"AND ( " +
+										"		:departureDate "+
+										"			BETWEEN DEPARTURE_DATE "+
+										"			AND DELIVERY_DATE "+
+										"		OR "+
+										"		:deliveryDate "+
+										"			BETWEEN DEPARTURE_DATE "+
+										"			AND DELIVERY_DATE "+
+										"	 ) "+
 										"AND STATUS <> 'REJECTED' "+
 										"AND STATUS <> 'NEW'");
 		}
@@ -121,6 +140,7 @@ public class ManagerAllocationBean implements AllocationLocal, AllocationRemote{
 		
 		query.setParameter("carrierID"		, carrierID	);
 		query.setParameter("departureDate"	, dateFormat.format(departureDate));
+		query.setParameter("deliveryDate"	, dateFormat.format(deliveryDate));
 		
 		List<?> result =  query.getResultList();
 		
@@ -129,37 +149,4 @@ public class ManagerAllocationBean implements AllocationLocal, AllocationRemote{
 		
 		return true;
 	}
-
-	private Session createSession() throws JMSException{
-		return factory.createConnection().createSession(true, Session.AUTO_ACKNOWLEDGE);
-	}
-	
-	private Session getSession() throws JMSException{
-		if(session == null)
-			return createSession();
-		
-		return session; 
-		
-	}
-	
-	public void setEntityManager(EntityManager entityManager) {
-		this.entityManager = entityManager;
-	}
-
-	public void setFactory(ConnectionFactory factory) {
-		this.factory = factory;
-	}
-
-	public void setQueue(Queue queue) {
-		this.queue = queue;
-	}
-
-	public void setSession(Session session) {
-		this.session = session;
-	}
-
-	public void setQuery(Query query) {
-		this.query = query;
-	}
-
 }
