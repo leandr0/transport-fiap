@@ -15,6 +15,9 @@ import javax.jms.ObjectMessage;
 import javax.jms.Queue;
 import javax.jms.Session;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import br.com.transport.domain.Freight;
 
 /**
@@ -33,6 +36,8 @@ public class ManagerResponseAllocationBean implements ResponseAllocationLocal , 
 	@Resource(mappedName = "/queue/allocationResponse")	
 	private Queue queue;
 
+	private static final Log LOG = LogFactory.getLog(ManagerResponseAllocationBean.class);
+	
 	/* 
 	 * (non-Javadoc)
 	 * @see br.com.transport.allocation.response.ResponseAllocation#responseAllocation(java.lang.String)
@@ -52,6 +57,7 @@ public class ManagerResponseAllocationBean implements ResponseAllocationLocal , 
 			
 			session = connection.createSession(true, Session.AUTO_ACKNOWLEDGE);
 
+			LOG.info("Consumer by : "+querySelector);
 			MessageConsumer consumer = session.createConsumer(queue,querySelector);
 			
 			ObjectMessage objectMessage = (ObjectMessage) consumer.receiveNoWait();
@@ -59,9 +65,11 @@ public class ManagerResponseAllocationBean implements ResponseAllocationLocal , 
 			session.commit();
 			session.close();
 			
-			if(objectMessage != null)
+			if(objectMessage != null){
+				LOG.info("Return Freight by messageID : "+idMessage);
 				return ((Freight)objectMessage.getObject());
-			
+			}
+			LOG.info("Freight by messageID : "+idMessage+" not found");
 			return null;
 
 		}catch (Exception e) {
