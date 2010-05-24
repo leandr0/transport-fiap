@@ -3,7 +3,6 @@
  */
 package br.com.transport.report;
 
-import java.math.BigInteger;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -44,19 +43,19 @@ public class ManagerReportBean implements ReportLocal, ReportRemote {
 	@SuppressWarnings("unchecked")
 	public List<ReportVO> executeReport() throws EJBException {
 
-		List<ReportVO> resultList = null;
+		List<ReportVO> resultList = new LinkedList<ReportVO>();
 
 		Query query = entityManager
-						.createNativeQuery("SELECT F.DEPARTURE_DATE,F.DELIVERY_DATE,F.STATUS, "+
-								"C.ID,C.CAPACITY,C.LICENSE_PLATE, C.MODEL "+
-								"FROM CARRIER C "+
-								"INNER JOIN FREIGHT F "+
-								"ON C.ID = F.CARRIER_ID "+
-								"WHERE F.STATUS IN ('ACCEPTED' ,'IN_PROGRESS') "+
-								"AND F.DEPARTURE_DATE "+
-								"BETWEEN :initialDate "+
-								"AND :lastDate "+
-								"ORDER BY C.ID ASC");
+		.createNativeQuery("SELECT F.DEPARTURE_DATE,F.DELIVERY_DATE,F.STATUS, "+
+				"C.ID,C.CAPACITY,C.LICENSE_PLATE, C.MODEL "+
+				"FROM CARRIER C "+
+				"INNER JOIN FREIGHT F "+
+				"ON C.ID = F.CARRIER_ID "+
+				"WHERE F.STATUS IN ('ACCEPTED' ,'IN_PROGRESS') "+
+				"AND F.DEPARTURE_DATE "+
+				"BETWEEN :initialDate "+
+				"AND :lastDate "+
+		"ORDER BY C.ID ASC");
 
 		query.setParameter("initialDate", getInitialDate());
 		query.setParameter("lastDate", getLastDate());
@@ -73,47 +72,16 @@ public class ManagerReportBean implements ReportLocal, ReportRemote {
 		 * model		 	[6]
 		 */
 
-		BigInteger idcarrier = null;
-		Calendar departureDate = null;
-		
 		DateTimeConverter timeConverter = new CalendarConverter();
-		
+
 		for(Object[] array : a){
-			
-			if(idcarrier == null){
-				idcarrier = (BigInteger) array[3];
-				departureDate = (Calendar) timeConverter.convert(Calendar.class, array[1]); 
-				departureDate.roll(Calendar.DAY_OF_MONTH, 1);
-				resultList = new LinkedList<ReportVO>();
-
-			}else if(idcarrier.equals((BigInteger) array[3])){
 				
-				Calendar deliveryDate = (Calendar)timeConverter.convert(Calendar.class,array[0]); 
-				deliveryDate.roll(Calendar.DAY_OF_MONTH, -1);
-				
-				deliveryDate.set(Calendar.HOUR_OF_DAY,0);
-				deliveryDate.set(Calendar.MINUTE,0);
-				deliveryDate.set(Calendar.SECOND,0);
+			Calendar deliveryDate 	= (Calendar)timeConverter.convert(Calendar.class,array[0]); 
+			Calendar departureDate 	= (Calendar)timeConverter.convert(Calendar.class,array[1]);;
 
-				departureDate.set(Calendar.HOUR_OF_DAY,0);
-				departureDate.set(Calendar.MINUTE,0);
-				departureDate.set(Calendar.SECOND,0);
-
-				if(departureDate.compareTo(deliveryDate) <= 0){
-
-					resultList.add(new ReportVO(departureDate.getTime(), deliveryDate.getTime(),
-							array[2].toString(), new Long(array[3].toString()), new Double(array[4].toString()),
-							array[5].toString(), array[6].toString()));
-					
-					departureDate = deliveryDate;
-				}
-				
-			}else{
-				idcarrier = (BigInteger) array[3];
-				departureDate = (Calendar) timeConverter.convert(Calendar.class,array[1]);
-				departureDate.roll(Calendar.DAY_OF_MONTH, 1);
-			}
-
+			resultList.add(new ReportVO(departureDate.getTime(), deliveryDate.getTime(),
+					array[2].toString(), new Long(array[3].toString()), new Double(array[4].toString()),
+					array[5].toString(), array[6].toString()));
 
 		}
 
