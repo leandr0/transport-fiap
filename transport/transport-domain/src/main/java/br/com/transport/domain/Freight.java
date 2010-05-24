@@ -8,6 +8,8 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -35,13 +37,14 @@ public class Freight implements EntityBase {
 	@Column(name = "INVOICE")
 	private String invoice;
 	
+	@Enumerated(EnumType.STRING)
 	@Column(name = "STATUS", nullable = false)
-	private String status;
+	private FreightStatus status;
 	
-	@Column(name = "DEPARTURE_DATE")
+	@Column(name = "DEPARTURE_DATE",nullable = false)
 	private Date departureDate;
 	
-	@Column(name = "DELIVERY_DATE")
+	@Column(name = "DELIVERY_DATE", nullable = false)
 	private Date deliveryDate;
 	
 	@OneToOne(cascade = CascadeType.ALL)
@@ -81,11 +84,11 @@ public class Freight implements EntityBase {
 		this.invoice = invoice;
 	}
 
-	public String getStatus() {
+	public FreightStatus getStatus() {
 		return status;
 	}
 
-	public void setStatus(String status) {
+	public void setStatus(FreightStatus status) {
 		this.status = status;
 	}
 
