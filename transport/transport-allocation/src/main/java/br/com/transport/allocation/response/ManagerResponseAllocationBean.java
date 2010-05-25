@@ -62,8 +62,10 @@ public class ManagerResponseAllocationBean implements ResponseAllocationLocal , 
 			
 			ObjectMessage objectMessage = (ObjectMessage) consumer.receiveNoWait();
 			
+			consumer.close();
 			session.commit();
 			session.close();
+			connection.close();
 			
 			if(objectMessage != null){
 				LOG.info("Return Freight by messageID : "+idMessage);
@@ -73,16 +75,6 @@ public class ManagerResponseAllocationBean implements ResponseAllocationLocal , 
 			return null;
 
 		}catch (Exception e) {
-
-			if(session != null ){
-
-				try{
-					session.rollback();
-				}catch (Exception ex) {
-					ex.getCause();
-				}
-			}
-
 			throw new EJBException(e);
 		}
 	}
