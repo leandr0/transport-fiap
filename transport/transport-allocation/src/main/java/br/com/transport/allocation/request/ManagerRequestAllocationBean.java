@@ -11,8 +11,10 @@ import javax.ejb.EJBException;
 import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
+import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.DeliveryMode;
+import javax.jms.MessageProducer;
 import javax.jms.ObjectMessage;
 import javax.jms.Queue;
 import javax.jms.Session;
@@ -47,6 +49,10 @@ public class ManagerRequestAllocationBean implements RequestAllocationLocal, Req
 	@Resource(mappedName = "/queue/allocationRequest")	
 	private Queue queue;
 
+	private Session session;
+	
+	private MessageProducer producer;
+	
 	private static final Log LOG = LogFactory.getLog(ManagerRequestAllocationBean.class);
 
 	/*
@@ -55,8 +61,6 @@ public class ManagerRequestAllocationBean implements RequestAllocationLocal, Req
 	 */
 	@Override
 	public String requestAllocation(Freight freight)throws EJBException{
-
-		Session session = null;
 
 		try{
 			LOG.info("Recebendo nova solicitacao de frete");
@@ -69,8 +73,8 @@ public class ManagerRequestAllocationBean implements RequestAllocationLocal, Req
 		}
 
 		try{
-
-			session = factory.createConnection().createSession(true, Session.AUTO_ACKNOWLEDGE);
+			Connection connection = factory.createConnection(); 
+			session = connection.createSession(true, Session.AUTO_ACKNOWLEDGE);
 
 			ObjectMessage objectMessage = session.createObjectMessage(freight);
 
@@ -79,23 +83,16 @@ public class ManagerRequestAllocationBean implements RequestAllocationLocal, Req
 			//Atributo que servira de parametro para o filtro de mensagens
 			objectMessage.setStringProperty("MessageID", idMessage);
 			LOG.info("Send MessageID : "+idMessage);
-			session.createProducer(queue).send(objectMessage,DeliveryMode.NON_PERSISTENT,9,0);
-
+			producer = session.createProducer(queue);
+			producer.send(objectMessage,DeliveryMode.NON_PERSISTENT,9,0);
+			
 			session.commit();
+			producer.close();
 			session.close();
-
+			connection.close();
 			return idMessage;
 
 		}catch (Exception e) {
-
-			if(session != null ){
-
-				try{
-					session.rollback();
-				}catch (Exception ex) {
-					ex.getCause();
-				}
-			}		
 			throw new EJBException(e);
 		} 
 	}	
@@ -139,5 +136,17 @@ public class ManagerRequestAllocationBean implements RequestAllocationLocal, Req
 		
 		freight.setDepartureDate(departure.getTime());
 		freight.setDeliveryDate(delivery.getTime());
+	}
+
+	public void setEntityManager(EntityManager entityManager) {
+		this.entityManager = entityManager;
+	}
+
+	public void setFactory(ConnectionFactory factory) {
+		this.factory = factory;
+	}
+
+	public void setQueue(Queue queue) {
+		this.queue = queue;
 	}
 }
