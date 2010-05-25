@@ -12,8 +12,10 @@ import javax.ejb.EJBException;
 import javax.ejb.Local;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
+import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.DeliveryMode;
+import javax.jms.MessageProducer;
 import javax.jms.ObjectMessage;
 import javax.jms.Queue;
 import javax.jms.Session;
@@ -62,7 +64,8 @@ public class ManagerAllocationBean implements AllocationLocal, AllocationRemote{
 		
 		try{
 			
-			session = factory.createConnection().createSession(true, Session.AUTO_ACKNOWLEDGE);
+			Connection connection = factory.createConnection();
+			session = connection.createSession(true, Session.AUTO_ACKNOWLEDGE);
 			
 			LOG.info("Update Freigh");
 			persistFreight(freight);
@@ -72,22 +75,15 @@ public class ManagerAllocationBean implements AllocationLocal, AllocationRemote{
 			objectMessage.setStringProperty("MessageID",idMessage);
 			
 			LOG.info("Seng messade ID : "+idMessage);
-			session.createProducer(queue).send(objectMessage,DeliveryMode.NON_PERSISTENT,9,0);
+			MessageProducer producer = session.createProducer(queue); 
+			producer.send(objectMessage,DeliveryMode.NON_PERSISTENT,9,0);
 
 			session.commit();
+			producer.close();
 			session.close();
+			connection.close();
 			
 		}catch (Exception e) {
-
-			if(session != null ){
-
-				try{
-					session.rollback();
-				}catch (Exception ex) {
-					ex.getCause();
-				}
-			}
-
 			throw new EJBException(e);
 		}
 	}
