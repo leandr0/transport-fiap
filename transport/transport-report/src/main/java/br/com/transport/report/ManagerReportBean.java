@@ -5,9 +5,12 @@ package br.com.transport.report;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.ejb.EJBException;
 import javax.ejb.Local;
@@ -40,27 +43,87 @@ public class ManagerReportBean implements ReportLocal, ReportRemote {
 	 * (non-Javadoc)
 	 * @see br.com.transport.report.Report#executeReport()
 	 */
-	@SuppressWarnings("unchecked")
 	public List<ReportVO> executeReport() throws EJBException {
 
-		List<ReportVO> resultList = new LinkedList<ReportVO>();
+		List<ReportVO> 				resultList	= new LinkedList<ReportVO>(); 
+		Map<Long, List<Calendar>> 	mapReport  	= new HashMap<Long, List<Calendar>>();
+		
+		List<ReportVO> handlerList = executeQuery(mapReport);
+		
+		removeDays(mapReport, handlerList);
+		
 
+		for(Long carrierId : mapReport.keySet()){
+
+			for(ReportVO rVO : handlerList){
+				if(rVO.getCarrierId().equals(carrierId)){
+					resultList.add(new ReportVO(rVO.getDepartureDate(),
+							rVO.getDeliveryDate(),
+							rVO.getStatus(), 
+							rVO.getCarrierId(),
+							rVO.getCapacity(),
+							rVO.getLicensePlate(),
+							rVO.getModel(),
+							getListDate(mapReport.get(carrierId))));
+					break;
+				}
+			}
+		}
+
+		return resultList;
+	}
+
+	/**
+	 * Retira da lista de dias da semana os dias utilizados no frete
+	 * @param mapReport
+	 * @param handlerList
+	 */
+	private void removeDays(Map<Long, List<Calendar>> mapReport , List<ReportVO> handlerList){
+		
+		Calendar init = getInitCalendar();
+
+		Calendar end = getLastCalendar();
+
+		for (ReportVO report : handlerList) {
+
+			List<Calendar> daysList = new LinkedList<Calendar>( mapReport.get(report.getCarrierId()));
+
+			for(Calendar cld : daysList){				
+				if(cld.compareTo(init) == 0 
+						||( cld.after(init) 
+								&& ( cld.before(end) ||  cld.compareTo(end) == 0 ))){
+					mapReport.get(report.getCarrierId()).remove(cld);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * 
+	 * @param mapReport
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	private List<ReportVO> executeQuery(Map<Long, List<Calendar>> mapReport) {
+		
+		List<ReportVO> handlerList = new LinkedList<ReportVO>();
+		
 		Query query = entityManager
-		.createNativeQuery("SELECT F.DEPARTURE_DATE,F.DELIVERY_DATE,F.STATUS, "+
-				"C.ID,C.CAPACITY,C.LICENSE_PLATE, C.MODEL "+
-				"FROM CARRIER C "+
-				"INNER JOIN FREIGHT F "+
-				"ON C.ID = F.CARRIER_ID "+
-				"WHERE F.STATUS IN ('ACCEPTED' ,'IN_PROGRESS') "+
-				"AND F.DEPARTURE_DATE "+
-				"BETWEEN :initialDate "+
-				"AND :lastDate "+
-		"ORDER BY C.ID ASC");
+						.createNativeQuery("SELECT F.DEPARTURE_DATE,F.DELIVERY_DATE,F.STATUS, "+
+								"C.ID,C.CAPACITY,C.LICENSE_PLATE, C.MODEL "+
+								"FROM CARRIER C "+
+								"INNER JOIN FREIGHT F "+
+								"ON C.ID = F.CARRIER_ID "+
+								"WHERE F.STATUS IN ('ACCEPTED' ,'IN_PROGRESS') "+
+								"AND F.DEPARTURE_DATE "+
+								"BETWEEN :initialDate "+
+								"AND :lastDate "+
+								"ORDER BY C.ID ASC");
 
 		query.setParameter("initialDate", getInitialDate());
 		query.setParameter("lastDate", getLastDate());
 
-		List<Object[]> a = query.getResultList();
+		List<Object[]> resultQuery = query.getResultList();
 
 		/**
 		 * departureDate	[0]
@@ -74,21 +137,63 @@ public class ManagerReportBean implements ReportLocal, ReportRemote {
 
 		DateTimeConverter timeConverter = new CalendarConverter();
 
-		for(Object[] array : a){
-				
-			Calendar deliveryDate 	= (Calendar)timeConverter.convert(Calendar.class,array[0]); 
-			Calendar departureDate 	= (Calendar)timeConverter.convert(Calendar.class,array[1]);;
+		List<Calendar> calendars = createDayOfTheWeek();
 
-			resultList.add(new ReportVO(departureDate.getTime(), deliveryDate.getTime(),
-					array[2].toString(), new Long(array[3].toString()), new Double(array[4].toString()),
-					array[5].toString(), array[6].toString()));
+		for(Object[] array : resultQuery){
+
+			mapReport.put(new Long(array[3].toString()), new LinkedList<Calendar>(calendars));
+
+			Calendar deliveryDate 	= (Calendar)timeConverter.convert(Calendar.class,array[0]); 
+			Calendar departureDate 	= (Calendar)timeConverter.convert(Calendar.class,array[1]);
+
+			handlerList.add(new ReportVO(departureDate.getTime(),
+					deliveryDate.getTime(),
+					array[2].toString(), 
+					new Long(array[3].toString()),
+					new Double(array[4].toString()),
+					array[5].toString(),
+					array[6].toString(),null));
+
+		}
+		
+		return handlerList;
+	}
+
+	/**
+	 * Retorna lista com os dias da semana
+	 * @return {@link List}< {@link Calendar} >
+	 */
+	private List<Calendar> createDayOfTheWeek(){
+
+		Calendar firstDay = GregorianCalendar.getInstance();
+		firstDay.setFirstDayOfWeek(Calendar.SUNDAY);
+		firstDay.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+		firstDay.set(Calendar.HOUR_OF_DAY,0);
+		firstDay.set(Calendar.MINUTE,0);
+		firstDay.set(Calendar.SECOND,0);
+
+		List<Calendar> daysOfTheWeek = new LinkedList<Calendar>();
+
+		for(int count = 0; count < 7 ; count++){
+
+			Calendar temp = (Calendar) firstDay.clone();
+			temp.roll(Calendar.DAY_OF_WEEK, count);
+			daysOfTheWeek.add(temp);  
 
 		}
 
-		return resultList;
+		return daysOfTheWeek;
 	}
 
 	private String getInitialDate(){
+		return dateFormat.format(getInitCalendar().getTime());
+	}
+
+	private String getLastDate(){
+		return dateFormat.format(getLastCalendar().getTime());
+	}
+
+	private Calendar getInitCalendar(){
 
 		Calendar init = GregorianCalendar.getInstance();
 		init.setFirstDayOfWeek(Calendar.SUNDAY);
@@ -97,11 +202,10 @@ public class ManagerReportBean implements ReportLocal, ReportRemote {
 		init.set(Calendar.MINUTE,0);
 		init.set(Calendar.SECOND,0);
 
-
-		return dateFormat.format(init.getTime());
+		return init;
 	}
 
-	private String getLastDate(){
+	private Calendar getLastCalendar(){
 
 		Calendar end = GregorianCalendar.getInstance();
 		end.setFirstDayOfWeek(Calendar.SUNDAY);
@@ -109,7 +213,17 @@ public class ManagerReportBean implements ReportLocal, ReportRemote {
 		end.set(Calendar.HOUR_OF_DAY,23);
 		end.set(Calendar.MINUTE,59);
 		end.set(Calendar.SECOND,59);
+		
+		return end;
+	}
 
-		return dateFormat.format(end.getTime());
+	private List<Date> getListDate(List<Calendar> calendarList){
+
+		List<Date> result = new LinkedList<Date>();
+
+		for (Calendar calendar : calendarList)
+			result.add(calendar.getTime());
+
+		return result;
 	}
 }
