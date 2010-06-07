@@ -13,8 +13,6 @@ import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
-import javax.jms.DeliveryMode;
-import javax.jms.MessageProducer;
 import javax.jms.ObjectMessage;
 import javax.jms.Queue;
 import javax.jms.Session;
@@ -51,8 +49,6 @@ public class ManagerRequestAllocationBean implements RequestAllocationLocal, Req
 
 	private Session session;
 	
-	private MessageProducer producer;
-	
 	private static final Log LOG = LogFactory.getLog(ManagerRequestAllocationBean.class);
 
 	/*
@@ -78,25 +74,28 @@ public class ManagerRequestAllocationBean implements RequestAllocationLocal, Req
 
 			ObjectMessage objectMessage = session.createObjectMessage(freight);
 
-			String idMessage = String.valueOf(freight.getId());
+			String messageID = String.valueOf(freight.getId());
 
 			//Atributo que servira de parametro para o filtro de mensagens
-			objectMessage.setStringProperty("MessageID", idMessage);
-			LOG.info("Send MessageID : "+idMessage);
-			producer = session.createProducer(queue);
-			producer.send(objectMessage,DeliveryMode.NON_PERSISTENT,9,0);
+			objectMessage.setStringProperty("MessageID", messageID);
+			LOG.info("Send MessageID : "+messageID);
+			session.createProducer(queue).send(objectMessage);
 			
 			session.commit();
-			producer.close();
 			session.close();
 			connection.close();
-			return idMessage;
+			return messageID;
 
 		}catch (Exception e) {
 			throw new EJBException(e);
 		} 
 	}	
 
+	/**
+	 * 
+	 * @param freight
+	 * @throws EJBException
+	 */
 	private void persistFreight(Freight freight) throws EJBException{
 		LOG.info("Persistindo solicitacao de frete");
 		Payment payment = new Payment();
@@ -106,7 +105,11 @@ public class ManagerRequestAllocationBean implements RequestAllocationLocal, Req
 		resetDate(freight);
 		entityManager.persist(freight);
 	}
-
+	
+	/**
+	 * 
+	 * @return Valor do Frete
+	 */
 	private Double randomValue(){
 
 		Random random = new Random();
@@ -120,6 +123,20 @@ public class ManagerRequestAllocationBean implements RequestAllocationLocal, Req
 
 	}
 
+	/**
+	 * 
+	 * @param departure
+	 * @param delivery
+	 */
+	private void validateDate(Calendar departure,Calendar delivery){
+		if(departure.after(delivery))
+			throw new EJBException("Data de saida maior que a data de entrega");
+	}
+	
+	/**
+	 * 
+	 * @param freight
+	 */
 	private void resetDate(Freight freight){
 		
 		DateTimeConverter timeConverter = new CalendarConverter();
@@ -134,18 +151,32 @@ public class ManagerRequestAllocationBean implements RequestAllocationLocal, Req
 		delivery.set(Calendar.MINUTE,59);
 		delivery.set(Calendar.SECOND,59);
 		
+		validateDate(departure, delivery);
+		
 		freight.setDepartureDate(departure.getTime());
 		freight.setDeliveryDate(delivery.getTime());
 	}
 
+	/**
+	 * 
+	 * @param entityManager
+	 */
 	public void setEntityManager(EntityManager entityManager) {
 		this.entityManager = entityManager;
 	}
 
+	/**
+	 * 
+	 * @param factory
+	 */
 	public void setFactory(ConnectionFactory factory) {
 		this.factory = factory;
 	}
 
+	/**
+	 * 
+	 * @param queue
+	 */
 	public void setQueue(Queue queue) {
 		this.queue = queue;
 	}
