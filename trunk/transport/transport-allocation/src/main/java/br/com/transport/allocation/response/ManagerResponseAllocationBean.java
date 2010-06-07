@@ -60,7 +60,7 @@ public class ManagerResponseAllocationBean implements ResponseAllocationLocal , 
 			LOG.info("Consumer by : "+querySelector);
 			MessageConsumer consumer = session.createConsumer(queue,querySelector);
 			
-			ObjectMessage objectMessage = (ObjectMessage) consumer.receiveNoWait();
+			ObjectMessage objectMessage = (ObjectMessage) consumer.receive(1000);
 			
 			consumer.close();
 			session.commit();
