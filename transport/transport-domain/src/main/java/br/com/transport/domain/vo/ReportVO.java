@@ -5,6 +5,7 @@ package br.com.transport.domain.vo;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author leandro.goncalves
@@ -26,8 +27,10 @@ public class ReportVO implements Serializable {
 	
 	private final String model;
 	
+	private final List<Date> freeDays;
+	
 	public ReportVO(Date departureDate,Date deliveryDate,String status,
-			Long carrierId,Double capacity,String licensePlate,String model) {
+			Long carrierId,Double capacity,String licensePlate,String model,List<Date> freeDays) {
 	
 		this.departureDate 	= departureDate;
 		this.deliveryDate  	= deliveryDate;
@@ -36,7 +39,7 @@ public class ReportVO implements Serializable {
 		this.capacity		= capacity;
 		this.licensePlate	= licensePlate;
 		this.model			= model;
-		
+		this.freeDays		= freeDays;
 	}
 
 	public Date getDepartureDate() {
@@ -65,5 +68,9 @@ public class ReportVO implements Serializable {
 
 	public String getModel() {
 		return model;
+	}
+
+	public List<Date> getFreeDays() {
+		return freeDays;
 	}
 }
