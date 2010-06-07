@@ -14,7 +14,6 @@ import javax.ejb.Remote;
 import javax.ejb.Stateless;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
-import javax.jms.DeliveryMode;
 import javax.jms.MessageProducer;
 import javax.jms.ObjectMessage;
 import javax.jms.Queue;
@@ -76,7 +75,7 @@ public class ManagerAllocationBean implements AllocationLocal, AllocationRemote{
 			
 			LOG.info("Seng messade ID : "+idMessage);
 			MessageProducer producer = session.createProducer(queue); 
-			producer.send(objectMessage,DeliveryMode.NON_PERSISTENT,9,0);
+			producer.send(objectMessage);
 
 			session.commit();
 			producer.close();
