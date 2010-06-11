@@ -268,16 +268,6 @@ public class ManagerCadastreBeanTest {
 	}
 
 	
-	
-	@Test(expected=IllegalArgumentException.class)
-	public void testFindEmployeeWihtIDLessEqual0(){
-		Employee employee = new Employee();
-		employee.setId(0L);
-		managerCadastreBeanTest.findEmployee(employee);
-	}
-	
-	
-	
 	@Test()
 	public void testFindEmployeeValid(){
 		Employee employee = new Employee();
@@ -302,15 +292,6 @@ public class ManagerCadastreBeanTest {
 	public void testRemoveEmployeeWithIDNull() {
 		managerCadastreBeanTest.removeEmployee(new Employee());
 	}
-	
-	
-	@Test(expected = IllegalArgumentException.class)
-	public void testRemoveEmployeeWihtIDLessEqual0() {
-		Employee employee = new Employee();
-		employee.setId(0L);
-		managerCadastreBeanTest.removeEmployee(employee);
-	}
-	
 	
 	
 	@Test()

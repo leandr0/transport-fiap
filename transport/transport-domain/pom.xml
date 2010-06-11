@@ -21,19 +21,7 @@
           		<serverName>transport</serverName>
           		<fileName>target/transport-domain.jar</fileName>          		         		          		  				
   			</configuration>    		
-    	</plugin>
-		 <plugin>
-	  		<groupId>org.codehaus.mojo</groupId>
-	  		<artifactId>jboss-maven-plugin</artifactId>
-	  		<version>1.4</version>
-			<configuration>
-				<jbossHome>C:\Workspace\Apps\Server\jboss-5.1.0.GA</jbossHome>
-	        	<serverName>transport</serverName>
-	          	<fileName>
-	          		target/transport-domain.jar
-	          	</fileName>
-	  			</configuration>  			
-	  		</plugin>    	
+    	</plugin>    	
     </plugins>
     <finalName>transport-domain</finalName>
   </build>

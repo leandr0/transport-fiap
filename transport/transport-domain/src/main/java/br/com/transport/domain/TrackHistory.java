@@ -31,20 +31,27 @@ public class TrackHistory implements EntityBase {
 	@Column(name = "DATE", nullable = false)
 	private Date date;
 	
+	@Column(name = "LOCAL", nullable = false)
+	private String local;
+	
 	@ManyToOne
 	@JoinColumn(name = "FREIGHT_ID", nullable = false)
 	private Freight freight;
+
 	
-	/* (non-Javadoc)
-	 * @see br.com.transport.domain.EntityBase#getId()
-	 */
+	public TrackHistory() {}
+
+	
+	public TrackHistory(Date date, String local) {
+		super();
+		this.date = date;
+		this.local = local;
+	}
+
 	public Long getId() {
 		return id;
 	}
 
-	/* (non-Javadoc)
-	 * @see br.com.transport.domain.EntityBase#setId(java.lang.Long)
-	 */
 	public void setId(Long id) {
 		this.id = id;
 	}
@@ -64,4 +71,14 @@ public class TrackHistory implements EntityBase {
 	public void setFreight(Freight freight) {
 		this.freight = freight;
 	}
+
+	public String getLocal() {
+		return local;
+	}
+
+	public void setLocal(String local) {
+		this.local = local;
+	}
+	
+	
 }
