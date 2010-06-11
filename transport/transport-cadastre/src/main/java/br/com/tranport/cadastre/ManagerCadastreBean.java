@@ -60,7 +60,7 @@ public class ManagerCadastreBean implements ManagerCadastreLocal, ManagerCadastr
 	public Employee findEmployee(Employee employee){
 		if(employee == null)
 			throw new IllegalArgumentException("Employee is null");
-		if(employee.getId() == null || employee.getId() <= 0)
+		if(employee.getId() == null )
 			throw new IllegalArgumentException("Employee with id null or <= 0");		
 		return entityManager.find(Employee.class, employee.getId());
 	}	
