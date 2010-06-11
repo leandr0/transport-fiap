@@ -57,8 +57,8 @@ public class ManagerReportBean implements ReportLocal, ReportRemote {
 
 			for(ReportVO rVO : handlerList){
 				if(rVO.getCarrierId().equals(carrierId)){
-					resultList.add(new ReportVO(rVO.getDepartureDate(),
-							rVO.getDeliveryDate(),
+					resultList.add(new ReportVO(rVO.getDeliveryDate(),
+							rVO.getDepartureDate(),
 							rVO.getStatus(), 
 							rVO.getCarrierId(),
 							rVO.getCapacity(),
@@ -82,12 +82,15 @@ public class ManagerReportBean implements ReportLocal, ReportRemote {
 		
 		Calendar init = getInitCalendar();
 
-		Calendar end = getLastCalendar();
+		Calendar end = getInitCalendar();
 
 		for (ReportVO report : handlerList) {
 
 			List<Calendar> daysList = new LinkedList<Calendar>( mapReport.get(report.getCarrierId()));
 
+			init.setTime(report.getDepartureDate());
+			end.setTime(report.getDeliveryDate());
+			
 			for(Calendar cld : daysList){				
 				if(cld.compareTo(init) == 0 
 						||( cld.after(init) 
@@ -120,8 +123,8 @@ public class ManagerReportBean implements ReportLocal, ReportRemote {
 								"AND :lastDate "+
 								"ORDER BY C.ID ASC");
 
-		query.setParameter("initialDate", getInitialDate());
-		query.setParameter("lastDate", getLastDate());
+		query.setParameter("initialDate", dateFormat.format(getInitCalendar().getTime()));
+		query.setParameter("lastDate", dateFormat.format(getLastCalendar().getTime()));
 
 		List<Object[]> resultQuery = query.getResultList();
 
@@ -143,17 +146,16 @@ public class ManagerReportBean implements ReportLocal, ReportRemote {
 
 			mapReport.put(new Long(array[3].toString()), new LinkedList<Calendar>(calendars));
 
-			Calendar deliveryDate 	= (Calendar)timeConverter.convert(Calendar.class,array[0]); 
-			Calendar departureDate 	= (Calendar)timeConverter.convert(Calendar.class,array[1]);
+			Calendar deliveryDate 	= (Calendar)timeConverter.convert(Calendar.class,array[1]); 
+			Calendar departureDate 	= (Calendar)timeConverter.convert(Calendar.class,array[0]);
 
 			handlerList.add(new ReportVO(departureDate.getTime(),
-					deliveryDate.getTime(),
-					array[2].toString(), 
-					new Long(array[3].toString()),
-					new Double(array[4].toString()),
-					array[5].toString(),
-					array[6].toString(),null));
-
+								deliveryDate.getTime(),
+								array[2].toString(), 
+								new Long(array[3].toString()),
+								new Double(array[4].toString()),
+								array[5].toString(),
+								array[6].toString(),null));
 		}
 		
 		return handlerList;
@@ -178,6 +180,7 @@ public class ManagerReportBean implements ReportLocal, ReportRemote {
 
 			Calendar temp = (Calendar) firstDay.clone();
 			temp.roll(Calendar.DAY_OF_WEEK, count);
+			temp.setTime(temp.getTime());
 			daysOfTheWeek.add(temp);  
 
 		}
@@ -185,14 +188,11 @@ public class ManagerReportBean implements ReportLocal, ReportRemote {
 		return daysOfTheWeek;
 	}
 
-	private String getInitialDate(){
-		return dateFormat.format(getInitCalendar().getTime());
-	}
 
-	private String getLastDate(){
-		return dateFormat.format(getLastCalendar().getTime());
-	}
-
+	/**
+	 * Retorna o primeiro dia da semana
+	 * @return
+	 */
 	private Calendar getInitCalendar(){
 
 		Calendar init = GregorianCalendar.getInstance();
@@ -201,10 +201,15 @@ public class ManagerReportBean implements ReportLocal, ReportRemote {
 		init.set(Calendar.HOUR_OF_DAY,0);
 		init.set(Calendar.MINUTE,0);
 		init.set(Calendar.SECOND,0);
+		init.setTime(init.getTime());
 
 		return init;
 	}
 
+	/**
+	 * Retorna o ultimo dia da semana
+	 * @return
+	 */
 	private Calendar getLastCalendar(){
 
 		Calendar end = GregorianCalendar.getInstance();
@@ -213,10 +218,16 @@ public class ManagerReportBean implements ReportLocal, ReportRemote {
 		end.set(Calendar.HOUR_OF_DAY,23);
 		end.set(Calendar.MINUTE,59);
 		end.set(Calendar.SECOND,59);
+		end.setTime(end.getTime());
 		
 		return end;
 	}
 
+	/**
+	 * 
+	 * @param calendarList
+	 * @return
+	 */
 	private List<Date> getListDate(List<Calendar> calendarList){
 
 		List<Date> result = new LinkedList<Date>();
@@ -225,5 +236,13 @@ public class ManagerReportBean implements ReportLocal, ReportRemote {
 			result.add(calendar.getTime());
 
 		return result;
+	}
+
+	/**
+	 * 
+	 * @param entityManager
+	 */
+	public void setEntityManager(EntityManager entityManager) {
+		this.entityManager = entityManager;
 	}
 }
