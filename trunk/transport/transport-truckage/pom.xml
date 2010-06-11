@@ -24,6 +24,12 @@
   		<artifactId>persistence-api</artifactId>
   		<version>1.0</version>
   	</dependency>
+  	<dependency>
+  		<groupId>br.com</groupId>
+  		<artifactId>transport-domain</artifactId>
+  		<version>1.0-SNAPSHOT</version>
+  		<scope>provided</scope>
+  	</dependency>
   </dependencies>
   
   <build>
@@ -37,6 +43,16 @@
         </configuration>
       </plugin>
 
+      <plugin>
+      	<groupId>org.codehaus.mojo</groupId>
+      	<artifactId>jboss-maven-plugin</artifactId>
+      	<version>1.4</version>
+			<configuration>
+				<jbossHome>/opt/app/jboss-5.1.0.GA</jbossHome>
+          		<serverName>transport</serverName>
+          		<fileName>target/transport-truckage.jar</fileName>          		         		          		  				
+  			</configuration>      	
+      </plugin>
     </plugins>
     <finalName>transport-truckage</finalName>
   </build>
