@@ -47,10 +47,6 @@ public class ManagerAllocationBean implements AllocationLocal, AllocationRemote{
 
 	@Resource(mappedName = "/queue/allocationResponse")	
 	private Queue queue;
-
-	private Session session = null;
-	
-	private Query query = null;
 	
 	private static final Log LOG = LogFactory.getLog(ManagerAllocationBean.class);
 	
@@ -60,11 +56,15 @@ public class ManagerAllocationBean implements AllocationLocal, AllocationRemote{
 	 */
 	@Override
 	public void processAllocation(Freight freight,String idMessage) throws EJBException {
-		
 		try{
 			
+			if(freight == null)
+				throw new IllegalArgumentException("The object Freight is null");
+			if(idMessage == null || idMessage.isEmpty())
+				throw new IllegalArgumentException("The idMessage is not valid");
+			
 			Connection connection = factory.createConnection();
-			session = connection.createSession(true, Session.AUTO_ACKNOWLEDGE);
+			Session session = connection.createSession(true, Session.AUTO_ACKNOWLEDGE);
 			
 			LOG.info("Update Freigh");
 			persistFreight(freight);
@@ -115,8 +115,8 @@ public class ManagerAllocationBean implements AllocationLocal, AllocationRemote{
 	 */
 	private boolean dateIsValid(Long carrierID, Date departureDate, Date deliveryDate )throws EJBException{
 	
-		if(query == null){
-			query = entityManager.createNativeQuery("SELECT ID FROM FREIGHT "+
+		
+		Query query = entityManager.createNativeQuery("SELECT ID FROM FREIGHT "+
 										"WHERE CARRIER_ID = :carrierID "+
 										"AND ( " +
 										"		:departureDate "+
@@ -129,7 +129,7 @@ public class ManagerAllocationBean implements AllocationLocal, AllocationRemote{
 										"	 ) "+
 										"AND STATUS <> 'REJECTED' "+
 										"AND STATUS <> 'NEW'");
-		}
+		
 		
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 		
@@ -143,5 +143,17 @@ public class ManagerAllocationBean implements AllocationLocal, AllocationRemote{
 			return false;
 		
 		return true;
+	}
+
+	public void setEntityManager(EntityManager entityManager) {
+		this.entityManager = entityManager;
+	}
+
+	public void setFactory(ConnectionFactory factory) {
+		this.factory = factory;
+	}
+
+	public void setQueue(Queue queue) {
+		this.queue = queue;
 	}
 }
