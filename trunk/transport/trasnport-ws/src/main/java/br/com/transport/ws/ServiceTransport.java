@@ -12,4 +12,6 @@ import br.com.transport.domain.Freight;
 public interface ServiceTransport {
 
 	public String requestAllocation(Freight freight);
+	
+	public Freight responseAllocation(String idMessage);
 }
