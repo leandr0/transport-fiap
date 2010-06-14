@@ -19,13 +19,21 @@ import br.com.transport.domain.Freight;
 @WebService(serviceName="Counter", portName="CounterPort")
 public class ManagerServiceTranportBean implements ServiceTransportLocal,
 		ServiceTransportRemote {
-
 	
 	@Override
 	@WebMethod
 	public String requestAllocation(Freight freight) {
+		
+		
+		
+		return null;
+	}
+
+	@Override
+	public Freight responseAllocation(String idMessage) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	
 }
