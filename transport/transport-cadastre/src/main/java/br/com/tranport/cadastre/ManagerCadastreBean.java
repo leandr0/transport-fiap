@@ -22,7 +22,7 @@ import br.com.transport.domain.Employee;
  * @author robson
  *
  */
-@Stateless
+@Stateless(name = "cadastre")
 @Local(ManagerCadastreLocal.class)
 @Remote(ManagerCadastreRemote.class)
 public class ManagerCadastreBean implements ManagerCadastreLocal, ManagerCadastreRemote {
