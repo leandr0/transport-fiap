@@ -56,12 +56,13 @@ public class ManagerAllocationBean implements AllocationLocal, AllocationRemote{
 	 */
 	@Override
 	public void processAllocation(Freight freight,String idMessage) throws EJBException {
+		
+		if(freight == null)
+			throw new IllegalArgumentException("The object Freight is null");
+		if(idMessage == null || idMessage.isEmpty())
+			throw new IllegalArgumentException("The idMessage is not valid");
+		
 		try{
-			
-			if(freight == null)
-				throw new IllegalArgumentException("The object Freight is null");
-			if(idMessage == null || idMessage.isEmpty())
-				throw new IllegalArgumentException("The idMessage is not valid");
 			
 			Connection connection = factory.createConnection();
 			Session session = connection.createSession(true, Session.AUTO_ACKNOWLEDGE);
