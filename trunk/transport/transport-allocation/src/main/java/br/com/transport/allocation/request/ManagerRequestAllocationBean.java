@@ -46,8 +46,6 @@ public class ManagerRequestAllocationBean implements RequestAllocationLocal, Req
 
 	@Resource(mappedName = "/queue/allocationRequest")	
 	private Queue queue;
-
-	private Session session;
 	
 	private static final Log LOG = LogFactory.getLog(ManagerRequestAllocationBean.class);
 
@@ -70,7 +68,7 @@ public class ManagerRequestAllocationBean implements RequestAllocationLocal, Req
 
 		try{
 			Connection connection = factory.createConnection(); 
-			session = connection.createSession(true, Session.AUTO_ACKNOWLEDGE);
+			Session session = connection.createSession(true, Session.AUTO_ACKNOWLEDGE);
 
 			ObjectMessage objectMessage = session.createObjectMessage(freight);
 
