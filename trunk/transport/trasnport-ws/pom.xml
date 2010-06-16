@@ -68,5 +68,26 @@
   		<type>ejb</type>
   		<scope>provided</scope>
   	</dependency>
+  	<dependency>
+  		<groupId>br.com</groupId>
+  		<artifactId>transport-cadastre</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  		<type>ejb</type>
+  		<scope>provided</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>br.com</groupId>
+  		<artifactId>transport-payment</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  		<type>ejb</type>
+  		<scope>provided</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>br.com</groupId>
+  		<artifactId>transport-truckage</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  		<type>ejb</type>
+  		<scope>provided</scope>
+  	</dependency>
   </dependencies>
 </project>
