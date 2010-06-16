@@ -219,7 +219,7 @@ public class ManagerAllocationBeanTest  {
 		allocationBeanMock.processAllocation(freight, messageID);
 	}
 	
-	@Test( expected = EJBException.class )
+	@Test( expected = IllegalArgumentException.class )
 	public void testProcessAllocationFreightNull() throws JMSException{
 		
 		Calendar departureDate = Calendar.getInstance();
@@ -291,7 +291,7 @@ public class ManagerAllocationBeanTest  {
 		allocationBeanMock.processAllocation(null, messageID);
 	}
 	
-	@Test( expected = EJBException.class )
+	@Test( expected = IllegalArgumentException.class )
 	public void testProcessAllocationIdMessageNull() throws JMSException{
 		
 		Calendar departureDate = Calendar.getInstance();
@@ -359,5 +359,21 @@ public class ManagerAllocationBeanTest  {
 		replay(connectionMock);
 		
 		allocationBeanMock.processAllocation(freight, null);
+	}
+	
+	@Test( expected = EJBException.class )
+	public void testProcessAllocationException() throws JMSException{
+				
+		String messageID = "555";
+		
+		Freight freight = new Freight();
+		
+		allocationBeanMock.setFactory(factoryMock);
+		
+		expect(factoryMock.createConnection()).andThrow(new JMSException("ERROR"));
+		
+		replay(factoryMock);
+		
+		allocationBeanMock.processAllocation(freight, messageID);
 	}
 }
