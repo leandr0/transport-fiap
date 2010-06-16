@@ -18,7 +18,7 @@ import br.com.transport.domain.TrackHistory;
  * @author robson
  *
  */
-@Stateless
+@Stateless(name = "track")
 @Local(value = ManagerTrackLocal.class)
 @Remote(value = ManagerTrackRemote.class)
 public class ManagerTrackBean implements ManagerTrackLocal, ManagerTrackRemote {
