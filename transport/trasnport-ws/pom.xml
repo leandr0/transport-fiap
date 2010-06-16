@@ -8,12 +8,34 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>br.com</groupId>
   <artifactId>trasnport-ws</artifactId>
-  <packaging>war</packaging>
+  <packaging>ejb</packaging>
   <name>trasnport-ws</name>
   <version>0.0.1-SNAPSHOT</version>
   <url>http://maven.apache.org</url>
   <build>
-    <finalName>trasnport-ws</finalName>
+  	<plugins>
+  		<plugin>
+	        <groupId>org.apache.maven.plugins</groupId>
+	        <artifactId>maven-ejb-plugin</artifactId>
+	        <version>2.1</version>
+	        <configuration>
+	          <ejbVersion>3.0</ejbVersion>
+	        </configuration>
+      	</plugin>
+		<plugin>
+  			<groupId>org.codehaus.mojo</groupId>
+  			<artifactId>jboss-maven-plugin</artifactId>
+  			<version>1.4</version>
+			<configuration>
+				<jbossHome>C:\Workspace\Apps\Server\jboss-5.1.0.GA</jbossHome>
+        		<serverName>transport</serverName>
+          		<fileName>
+          			target/transport-ws.jar
+          		</fileName>
+  			</configuration>  			
+  		</plugin>
+  	</plugins>
+    <finalName>transport-ws</finalName>
   </build>
   <dependencies>
   	<dependency>
@@ -30,7 +52,21 @@
   		<groupId>br.com</groupId>
   		<artifactId>transport-domain</artifactId>
   		<version>1.0-SNAPSHOT</version>
-  		<scope>compile</scope>
+  		<scope>provided</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>br.com</groupId>
+  		<artifactId>transport-allocation</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  		<type>ejb</type>
+  		<scope>provided</scope>
+  	</dependency>
+  	<dependency>
+  		<groupId>br.com</groupId>
+  		<artifactId>transport-report</artifactId>
+  		<version>0.0.1-SNAPSHOT</version>
+  		<type>ejb</type>
+  		<scope>provided</scope>
   	</dependency>
   </dependencies>
 </project>
