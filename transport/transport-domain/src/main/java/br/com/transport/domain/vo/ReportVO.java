@@ -13,21 +13,23 @@ import java.util.List;
  */
 public class ReportVO implements Serializable {
 	
-	private final Date departureDate;
+	private Date departureDate;
 	
-	private final Date deliveryDate;
+	private Date deliveryDate;
 	
-	private final String status;
+	private String status;
 	
-	private final Long carrierId;
+	private Long carrierId;
 	
-	private final Double capacity;
+	private Double capacity;
 	
-	private final String licensePlate;
+	private String licensePlate;
 	
-	private final String model;
+	private String model;
 	
-	private final List<Date> freeDays;
+	private List<Date> freeDays;
+	
+	public ReportVO() {}
 	
 	public ReportVO(Date departureDate,Date deliveryDate,String status,
 			Long carrierId,Double capacity,String licensePlate,String model,List<Date> freeDays) {
