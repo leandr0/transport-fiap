@@ -18,7 +18,7 @@ import br.com.transport.domain.PaymentStatus;
  * @author robson
  *
  */
-@Stateless
+@Stateless(name = "payment")
 @Local(value = ManagerPaymentLocal.class)
 @Remote(value = ManagerPaymentRemote.class)
 public class ManagerPaymentBean implements ManagerPaymentLocal, ManagerPaymentRemote {
