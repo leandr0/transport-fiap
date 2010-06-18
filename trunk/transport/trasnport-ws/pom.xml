@@ -52,42 +52,36 @@
   		<groupId>br.com</groupId>
   		<artifactId>transport-domain</artifactId>
   		<version>1.0-SNAPSHOT</version>
-  		<scope>provided</scope>
   	</dependency>
   	<dependency>
   		<groupId>br.com</groupId>
   		<artifactId>transport-allocation</artifactId>
   		<version>0.0.1-SNAPSHOT</version>
   		<type>ejb</type>
-  		<scope>provided</scope>
   	</dependency>
   	<dependency>
   		<groupId>br.com</groupId>
   		<artifactId>transport-report</artifactId>
   		<version>0.0.1-SNAPSHOT</version>
   		<type>ejb</type>
-  		<scope>provided</scope>
   	</dependency>
   	<dependency>
   		<groupId>br.com</groupId>
   		<artifactId>transport-cadastre</artifactId>
   		<version>0.0.1-SNAPSHOT</version>
   		<type>ejb</type>
-  		<scope>provided</scope>
   	</dependency>
   	<dependency>
   		<groupId>br.com</groupId>
   		<artifactId>transport-payment</artifactId>
   		<version>0.0.1-SNAPSHOT</version>
   		<type>ejb</type>
-  		<scope>provided</scope>
   	</dependency>
   	<dependency>
   		<groupId>br.com</groupId>
   		<artifactId>transport-truckage</artifactId>
   		<version>0.0.1-SNAPSHOT</version>
   		<type>ejb</type>
-  		<scope>provided</scope>
   	</dependency>
   </dependencies>
 </project>
