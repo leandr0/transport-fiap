@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="ASCII"?>
+<application xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:application="http://java.sun.com/xml/ns/javaee/application_5.xsd" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application_5.xsd" version="5">
+  <display-name>transport-ear</display-name>
+  <module>
+    <ejb>transport-allocation.jar</ejb>
+  </module>
+  <module>
+    <ejb>transport-cadastre.jar</ejb>
+  </module>
+  <module>
+    <ejb>transport-truckage.jar</ejb>
+  </module>
+  <module>
+    <ejb>transport-payment.jar</ejb>
+  </module>
+  <module>
+    <ejb>transport-report.jar</ejb>
+  </module>
+  <module>
+    <java>transport-domain.jar</java>
+  </module>
+  <module>
+    <web>
+      <web-uri>transport-ws.jar</web-uri>
+      <context-root>transport-ws</context-root>
+    </web>
+  </module>
+  <library-directory>lib</library-directory>
+</application>
