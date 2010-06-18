@@ -32,22 +32,22 @@ import br.com.transport.truckage.ManagerTrackBean;
 @WebService
 public class ManagerServiceTranportBean implements ServiceTransportLocal, ServiceTransportRemote {	
 	
-	@EJB(mappedName="requestAllocation/remote") 
+	@EJB 
 	private RequestAllocationRemote requestAllocation;
 	
-	@EJB(mappedName="responseAllocation/remote") 
+	@EJB 
 	private ResponseAllocationRemote responseAllocation;
 	
-	@EJB(mappedName="report/remote") 
+	@EJB 
 	private ReportRemote report;
 	
-	@EJB(mappedName="cadastre/remote")
+	@EJB
 	private ManagerCadastreRemote cadastre;
 	
-	@EJB(mappedName="payment/remote")
+	@EJB
 	private ManagerPaymentBean payment;
 	
-	@EJB(mappedName="track/remote")
+	@EJB
 	private ManagerTrackBean track;
 	
 	@Override
