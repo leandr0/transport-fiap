@@ -19,9 +19,9 @@ import br.com.transport.domain.Employee;
 import br.com.transport.domain.Freight;
 import br.com.transport.domain.TrackHistory;
 import br.com.transport.domain.vo.ReportVO;
-import br.com.transport.payment.ManagerPaymentBean;
+import br.com.transport.payment.ManagerPaymentRemote;
 import br.com.transport.report.ReportRemote;
-import br.com.transport.truckage.ManagerTrackBean;
+import br.com.transport.truckage.ManagerTrackRemote;
 
 /**
  * @author leandro.goncalves
@@ -45,10 +45,10 @@ public class ManagerServiceTranportBean implements ServiceTransportLocal, Servic
 	private ManagerCadastreRemote cadastre;
 	
 	@EJB
-	private ManagerPaymentBean payment;
+	private ManagerPaymentRemote payment;
 	
 	@EJB
-	private ManagerTrackBean track;
+	private ManagerTrackRemote track;
 	
 	@Override
 	@WebMethod
