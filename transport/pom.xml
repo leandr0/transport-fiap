@@ -25,19 +25,6 @@
   			</configuration>
   		</plugin>
   		<plugin>
-  			<groupId>org.codehaus.mojo</groupId>
-  			<artifactId>jboss-maven-plugin</artifactId>
-  			<version>1.4</version>
-			<configuration>
-				<jbossHome>C:\Workspace\Apps\Server\jboss-5.1.0.GA</jbossHome>
-          		<serverName>transport</serverName>
-          		<fileName>
-          			transport-allocation/target/transport-allocation.jar
-          		</fileName>
-          		         		          		  				
-  			</configuration>  			
-  		</plugin>
-  		<plugin>
   			<groupId>org.apache.maven.plugins</groupId>
   			<artifactId>maven-pmd-plugin</artifactId>
   			<version>2.5</version>
@@ -56,6 +43,7 @@
     <module>transport-report</module>
     <module>transport-payment</module>
     <module>transport-truckage</module>
+    <module>transport-ear</module>
   </modules>
 
   <repositories>
@@ -71,6 +59,12 @@
   	</repository>
   </repositories>
   <dependencies>
+  	<dependency>
+  		<groupId>commons-beanutils</groupId>
+  		<artifactId>commons-beanutils</artifactId>
+  		<version>1.8.3</version>
+  		<type>jar</type>
+  	</dependency>
   	<dependency>
   		<groupId>junit</groupId>
   		<artifactId>junit</artifactId>
@@ -100,13 +94,6 @@
   		<scope>test</scope>
   	</dependency>
   	<dependency>
-  		<groupId>commons-beanutils</groupId>
-  		<artifactId>commons-beanutils</artifactId>
-  		<version>1.8.3</version>
-  		<type>jar</type>
-  		<scope>provided</scope>
-  	</dependency>
-  	<dependency>
   		<groupId>org.mockejb</groupId>
   		<artifactId>mockejb</artifactId>
   		<version>0.6-beta2</version>
@@ -125,6 +112,12 @@
   		<groupId>apache-oro</groupId>
   		<artifactId>jakarta-oro</artifactId>
   		<version>2.0.8</version>
+  	</dependency>
+  	<dependency>
+  		<groupId>commons-lang</groupId>
+  		<artifactId>commons-lang</artifactId>
+  		<version>2.5</version>
+  		<type>jar</type>
   	</dependency>
   </dependencies>
 </project>
