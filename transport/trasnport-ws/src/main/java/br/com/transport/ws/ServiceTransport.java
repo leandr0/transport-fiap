@@ -3,37 +3,37 @@
  */
 package br.com.transport.ws;
 
-import java.util.List;
-
-import br.com.transport.domain.Carrier;
-import br.com.transport.domain.Employee;
-import br.com.transport.domain.Freight;
-import br.com.transport.domain.TrackHistory;
-import br.com.transport.domain.vo.ReportVO;
+import br.com.transport.payment.PaymentException;
+import br.com.transport.ws.vo.CarrierWS;
+import br.com.transport.ws.vo.EmployeeWS;
+import br.com.transport.ws.vo.FreightWS;
+import br.com.transport.ws.vo.ReportVOWS;
+import br.com.transport.ws.vo.TrackHistoryWS;
 
 /**
  * @author leandro.goncalves
+ * @author robson
  *
  */
 public interface ServiceTransport {
 
-	public String requestAllocation(Freight freight);
+	public String requestAllocation(FreightWS freight);
 	
-	public Freight responseAllocation(String idMessage);
+	public FreightWS responseAllocation(String idMessage);
 	
-	public List<ReportVO> generateReport();
+	public ReportVOWS[] generateReport();
 	
-	public void addCarrierFleet(List<Carrier> carriers);
+	public void addCarrierFleet(CarrierWS[] carriers);
 	
-	public void addEmployee(Employee employee);
+	public void addEmployee(EmployeeWS employee);
 
-	public Employee findEmployee(Employee employee);
+	public EmployeeWS findEmployee(EmployeeWS employee);
 	
-	public void removeEmployee(Employee employee);
+	public void removeEmployee(EmployeeWS employee);
 
-	public Employee updateEmployee(Employee employee);
+	public EmployeeWS updateEmployee(EmployeeWS employee);
 	
-	public Freight registerPaymentFreight(Long numberFreight, Double value);
+	public FreightWS registerPaymentFreight(Long numberFreight, Double value) throws PaymentException;
 	
-	public TrackHistory getTrackHistoryCurrent(Long numberFreight);
+	public TrackHistoryWS getTrackHistoryCurrent(Long numberFreight);
 }

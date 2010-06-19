@@ -3,33 +3,32 @@
  */
 package br.com.transport.ws;
 
-import java.util.List;
-
 import javax.ejb.EJB;
 import javax.ejb.Remote;
 import javax.ejb.Stateless;
-import javax.jws.WebMethod;
 import javax.jws.WebService;
 
 import br.com.tranport.cadastre.ManagerCadastreRemote;
 import br.com.transport.allocation.request.RequestAllocationRemote;
 import br.com.transport.allocation.response.ResponseAllocationRemote;
-import br.com.transport.domain.Carrier;
-import br.com.transport.domain.Employee;
-import br.com.transport.domain.Freight;
-import br.com.transport.domain.TrackHistory;
-import br.com.transport.domain.vo.ReportVO;
-import br.com.transport.payment.ManagerPaymentRemote;
+import br.com.transport.payment.ManagerPayment;
+import br.com.transport.payment.PaymentException;
 import br.com.transport.report.ReportRemote;
-import br.com.transport.truckage.ManagerTrackRemote;
+import br.com.transport.truckage.ManagerTrack;
+import br.com.transport.ws.vo.CarrierWS;
+import br.com.transport.ws.vo.EmployeeWS;
+import br.com.transport.ws.vo.FreightWS;
+import br.com.transport.ws.vo.ReportVOWS;
+import br.com.transport.ws.vo.TrackHistoryWS;
 
 /**
  * @author leandro.goncalves
+ * @author robson
  *
  */
-@Stateless(name = "serviceTransport")
+@Stateless(name = "serviceTransport" )
 @Remote(ServiceTransportRemote.class)
-@WebService
+@WebService(name="transportws" )
 public class ManagerServiceTranportBean implements ServiceTransportLocal, ServiceTransportRemote {	
 	
 	@EJB 
@@ -45,76 +44,66 @@ public class ManagerServiceTranportBean implements ServiceTransportLocal, Servic
 	private ManagerCadastreRemote cadastre;
 	
 	@EJB
-	private ManagerPaymentRemote payment;
+	private ManagerPayment payment;
 	
 	@EJB
-	private ManagerTrackRemote track;
-	
-	@Override
-	@WebMethod
-	public String requestAllocation(Freight freight) {
-		return requestAllocation.requestAllocation(freight);
-	}
-
-	
-	@Override
-	@WebMethod
-	public Freight responseAllocation(String idMessage) {
-		return responseAllocation.responseAllocation(idMessage);
-	}
-
+	private ManagerTrack track;
 
 	@Override
-	@WebMethod
-	public List<ReportVO> generateReport() {
-		return report.executeReport();
-	}
-	
-	@Override
-	@WebMethod
-	public void addCarrierFleet(List<Carrier> carriers){
-		cadastre.addCarrierFleet(carriers);
-	}
-	
-	@Override
-	@WebMethod
-	public void addEmployee(Employee employee) {
-		cadastre.addEmployee(employee);
+	public void addCarrierFleet(CarrierWS[] carriers) {
+		// TODO Auto-generated method stub
 	}
 
 	@Override
-	@WebMethod
-	public Employee findEmployee(Employee employee){
-		return cadastre.findEmployee(employee);
+	public void addEmployee(EmployeeWS employee) {
+		// TODO Auto-generated method stub
+	}
+
+	@Override
+	public EmployeeWS findEmployee(EmployeeWS employee) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public ReportVOWS[] generateReport() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public TrackHistoryWS getTrackHistoryCurrent(Long numberFreight) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public FreightWS registerPaymentFreight(Long numberFreight, Double value)
+			throws PaymentException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void removeEmployee(EmployeeWS employee) {
+		// TODO Auto-generated method stub	
+	}
+
+	@Override
+	public String requestAllocation(FreightWS freight) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public FreightWS responseAllocation(String idMessage) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public EmployeeWS updateEmployee(EmployeeWS employee) {
+		// TODO Auto-generated method stub
+		return null;
 	}	
-
-	@Override
-	@WebMethod
-	public void removeEmployee(Employee employee) {
-		cadastre.removeEmployee(employee);
-	}
-
-	@Override
-	@WebMethod
-	public Employee updateEmployee(Employee employee){
-		return cadastre.updateEmployee(employee);
-	}
-
-//TODO arrumar esta muito porco
-	@Override
-	@WebMethod
-	public Freight registerPaymentFreight(Long numberFreight, Double value) {
-		try {
-			return payment.registerPaymentFreight(numberFreight, value);
-		} catch (Exception e) {
-			return null;
-		}
-
-	}
-
-	@Override
-	@WebMethod
-	public TrackHistory getTrackHistoryCurrent(Long numberFreight) {
-		return track.getTrackHistoryCurrent(numberFreight);
-	}
 }
