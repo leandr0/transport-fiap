@@ -40,15 +40,15 @@
   			<artifactId>jboss-maven-plugin</artifactId>
   			<version>1.4</version>
 			<configuration>
-				<jbossHome>C:\Workspace\Apps\Server\jboss-5.1.0.GA</jbossHome>
+				<jbossHome>/opt/app/jboss-5.1.0.GA</jbossHome>
         		<serverName>transport</serverName>
           		<fileName>
-          			target/transport-ear.ear
+          			target/transport.ear
           		</fileName>
   			</configuration>  			
   		</plugin>
     </plugins>
-    <finalName>transport-ear</finalName>
+    <finalName>transport</finalName>
   </build>
   <dependencies>
   	<dependency>
