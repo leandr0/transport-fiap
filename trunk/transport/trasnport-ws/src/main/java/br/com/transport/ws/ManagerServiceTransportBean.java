@@ -16,13 +16,19 @@ import br.com.transport.allocation.request.RequestAllocationRemote;
 import br.com.transport.allocation.response.ResponseAllocationRemote;
 import br.com.transport.domain.Carrier;
 import br.com.transport.domain.Employee;
+import br.com.transport.domain.Freight;
+import br.com.transport.domain.TrackHistory;
 import br.com.transport.payment.ManagerPayment;
+import br.com.transport.payment.ManagerPaymentRemote;
 import br.com.transport.payment.PaymentException;
 import br.com.transport.report.ReportRemote;
 import br.com.transport.truckage.ManagerTrack;
+import br.com.transport.truckage.ManagerTrackRemote;
 import br.com.transport.ws.convert.TransportWSConvert;
 import br.com.transport.ws.convert.TransportWSConvertCarrier;
 import br.com.transport.ws.convert.TransportWSConvertEmployee;
+import br.com.transport.ws.convert.TransportWSConvertFreight;
+import br.com.transport.ws.convert.TransportWSConvertTrackHistoryWS;
 import br.com.transport.ws.vo.CarrierWS;
 import br.com.transport.ws.vo.EmployeeWS;
 import br.com.transport.ws.vo.FreightWS;
@@ -52,10 +58,10 @@ public class ManagerServiceTransportBean implements ServiceTransportLocal, Servi
 	private ManagerCadastreRemote cadastre;
 	
 	@EJB
-	private ManagerPayment payment;
+	private ManagerPaymentRemote payment;
 	
 	@EJB
-	private ManagerTrack track;
+	private ManagerTrackRemote track;
  
 	
 	TransportWSConvert<EmployeeWS, Employee> convert = new TransportWSConvertEmployee<EmployeeWS, Employee>();	
@@ -84,8 +90,13 @@ public class ManagerServiceTransportBean implements ServiceTransportLocal, Servi
 
 	
 	@Override
-	public EmployeeWS findEmployee(EmployeeWS employee) {		
-		return convert.convertToWS(cadastre.findEmployee(convert.convertToEntity(employee)));
+	public EmployeeWS findEmployee(EmployeeWS employeeWS) {
+		Employee employee = cadastre.findEmployee(convert.convertToEntity(employeeWS));
+		
+		if(employee == null)
+			return null;
+		
+		return convert.convertToWS(employee);
 	}
 
 	
@@ -96,16 +107,26 @@ public class ManagerServiceTransportBean implements ServiceTransportLocal, Servi
 	}
 
 	@Override
-	public TrackHistoryWS getTrackHistoryCurrent(Long numberFreight) {
-		// TODO Auto-generated method stub
-		return null;
+	public TrackHistoryWS getTrackHistoryCurrent(Long numberFreight){
+		
+		TransportWSConvert<TrackHistoryWS, TrackHistory> convert =
+				new TransportWSConvertTrackHistoryWS<TrackHistoryWS, TrackHistory>();
+
+		TrackHistory history = track.getTrackHistoryCurrent(numberFreight);
+		
+		if( history == null)
+			return null;
+		
+		return convert.convertToWS(history);
 	}
 
 	
 	@Override
 	public FreightWS registerPaymentFreight(Long numberFreight, Double value)throws PaymentException {
-		// TODO Auto-generated method stub
-		return null;
+		TransportWSConvert<FreightWS, Freight> convert = 
+			new TransportWSConvertFreight<FreightWS, Freight>();
+		
+		return convert.convertToWS(payment.registerPaymentFreight(numberFreight, value));
 	}
 
 	@Override
