@@ -27,10 +27,10 @@
   			<artifactId>jboss-maven-plugin</artifactId>
   			<version>1.4</version>
 			<configuration>
-				<jbossHome>C:\Workspace\Apps\Server\jboss-5.1.0.GA</jbossHome>
+				<jbossHome>C:\Workspace\Apps\Server\jboss-ws-5.1.0.GA</jbossHome>
         		<serverName>transport</serverName>
           		<fileName>
-          			target/transport-ws.jar
+          			target/ws.jar
           		</fileName>
   			</configuration>  			
   		</plugin>
