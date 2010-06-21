@@ -21,6 +21,11 @@ import javax.persistence.Table;
 @Table(name = "CARRIER")
 public class Carrier implements EntityBase {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 8830299347672655938L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "ID")
@@ -49,9 +54,10 @@ public class Carrier implements EntityBase {
 	public Carrier() {
 	}
 
-	public Carrier(String model, String year, String lisencePlate,
+	public Carrier(Long id,String model, String year, String lisencePlate,
 			Double capacity) {
 		super();
+		this.id = id;
 		this.model = model;
 		this.year = year;
 		this.lisencePlate = lisencePlate;
