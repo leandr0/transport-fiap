@@ -12,6 +12,8 @@ package br.com.transport.ws.vo;
  */
 public class CarrierWS implements WSVO{
 	
+	private long id;
+	
 	private String model;
 		
 	private String year;
@@ -23,13 +25,24 @@ public class CarrierWS implements WSVO{
 	public CarrierWS() {}
 
 	
-	public CarrierWS(String model, String year, String lisencePlate,
+	public CarrierWS(long id,String model, String year, String lisencePlate,
 			double capacity) {
 		super();
+		this.id = id;
 		this.model = model;
 		this.year = year;
 		this.lisencePlate = lisencePlate;
 		this.capacity = capacity;
+	}
+
+
+	public long getId() {
+		return id;
+	}
+
+
+	public void setId(long id) {
+		this.id = id;
 	}
 
 
