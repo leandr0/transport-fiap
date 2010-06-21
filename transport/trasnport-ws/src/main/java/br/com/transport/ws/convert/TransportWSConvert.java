@@ -3,14 +3,16 @@
  */
 package br.com.transport.ws.convert;
 
-import br.com.transport.domain.EntityBase;
+import java.io.Serializable;
+
 import br.com.transport.ws.vo.WSVO;
 
 /**
  * @author robson
+ * @author leandro.goncalves
  *
  */
-public interface TransportWSConvert<T extends WSVO, E extends EntityBase> {
+public interface TransportWSConvert<T extends WSVO, E extends Serializable> {
 
 	public  T convertToWS(E e);
 	
