@@ -22,7 +22,7 @@ public class ReportVOWS implements WSVO{
 	
 	private String model;
 	
-	private String[] freeDays;
+	private String[] freeDays = null;
 
 	
 	public ReportVOWS() {}
@@ -104,9 +104,5 @@ public class ReportVOWS implements WSVO{
 
 	public String[] getFreeDays() {
 		return freeDays;
-	}
-
-	public void setFreeDays(String[] freeDays) {
-		this.freeDays = freeDays;
 	}
 }
