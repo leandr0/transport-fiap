@@ -19,6 +19,7 @@ public class TransportWSConvertCarrier<T extends CarrierWS, E extends Carrier> i
 		if(t == null)
 			throw new IllegalArgumentException("T is null");
 		return  (E) new Carrier(
+					t.getId(),
 					t.getModel(),
 					t.getYear(),
 					t.getLisencePlate(),
@@ -34,6 +35,7 @@ public class TransportWSConvertCarrier<T extends CarrierWS, E extends Carrier> i
 		if( e == null)
 			throw new IllegalArgumentException("E is null");
 		return (T) new CarrierWS(
+					e.getId(),
 					e.getModel(),
 					e.getYear(),
 					e.getLisencePlate(),

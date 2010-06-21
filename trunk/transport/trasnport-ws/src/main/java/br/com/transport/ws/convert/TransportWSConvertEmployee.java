@@ -3,8 +3,6 @@
  */
 package br.com.transport.ws.convert;
 
-import javax.persistence.EnumType;
-
 import br.com.transport.domain.Employee;
 import br.com.transport.domain.Post;
 import br.com.transport.ws.vo.EmployeeWS;
