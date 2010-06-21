@@ -13,6 +13,11 @@ import java.util.List;
  */
 public class ReportVO implements Serializable {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1103165191993797193L;
+
 	private Date departureDate;
 	
 	private Date deliveryDate;
