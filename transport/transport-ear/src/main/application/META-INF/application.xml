@@ -21,8 +21,8 @@
   </module>
   <module>
     <web>
-      <web-uri>transport-ws.jar</web-uri>
-      <context-root>transport-ws</context-root>
+      <web-uri>ws.jar</web-uri>
+      <context-root>ws</context-root>
     </web>
   </module>
   <library-directory>lib</library-directory>
