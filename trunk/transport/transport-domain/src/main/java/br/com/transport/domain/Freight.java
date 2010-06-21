@@ -29,6 +29,11 @@ import javax.persistence.Entity;
 @Table(name = "FREIGHT")
 public class Freight implements EntityBase {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4886770440422671462L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "ID")

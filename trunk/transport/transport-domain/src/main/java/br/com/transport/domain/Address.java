@@ -19,6 +19,11 @@ import javax.persistence.Table;
 @Table(name = "ADDRESS")
 public class Address implements EntityBase {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2205044063106290344L;
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "ID")
