@@ -40,7 +40,7 @@ public class TransporWSConvertCarrierTest {
 	
 	@Test()
 	public void testConvertToWSWihtCarrierWSValid() {
-		CarrierWS carrierWS =  transporWSConvert.convertToWS(new Carrier("model","2010","100",2.0));
+		CarrierWS carrierWS =  transporWSConvert.convertToWS(new Carrier(1L,"model","2010","100",2.0));
 		assertNotNull(carrierWS);
 		assertEquals("model", carrierWS.getModel());
 		assertEquals("2010", carrierWS.getYear());
@@ -57,7 +57,7 @@ public class TransporWSConvertCarrierTest {
 	
 	@Test()
 	public void testConvertToEntityWihtEntityValid() {
-		Carrier carrier = transporWSConvert.convertToEntity(new CarrierWS("model","2010","100",2.0));
+		Carrier carrier = transporWSConvert.convertToEntity(new CarrierWS(1L,"model","2010","100",2.0));
 		assertNotNull(carrier);
 		assertEquals("model", carrier.getModel());
 		assertEquals("2010", carrier.getYear());
